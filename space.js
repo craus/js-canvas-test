@@ -4,10 +4,12 @@ function createSpace(params) {
     frameCount: 0,
     tickCount: 0,
     paint: function() {
+      debugCounter = 0
       ui.clearDisplay()
       ui.context()
       units.forEach(call('paint')) 
       ui.gradient()
+      //debug(debugCounter)
     },
     tick: function() {
       for (var i = 0; i < this.ticksPerFrame; i++) {

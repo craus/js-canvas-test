@@ -20,69 +20,110 @@
       
   var close = function(a, b) {
     for(var i = a.length; i--;) {
-      if (Math.abs(a[i]-b[i]) > eps)
+      if (Math.abs(a[i]-b[i]) > 1e-10)
         return false;
     }
     return true;
   }
   
-  var inList = function(list) {
+  var inList = function(list, value) {
     return list.some(function(t) {
-      return close(t, ui.transforms.last)
+      return close(t, value)
     })
   }  
   
+  var bfs = function(painting, set, queue, maxDistance) {
+    if (painting.distance > maxDistance) {
+      return
+    }  
+    var list = set[painting.cell.id] = set[painting.cell.id] || []
+    
+    if (inList(list, painting.matrix)) {
+      return
+    }
+    list.push(painting.matrix)
+    
+    painting.cell.links.forEach(function(link) {
+      var matrix = transform(painting.matrix, link.x, link.y, link.z, link.ang)
+      queue.enqueue({
+        cell: link.to, 
+        matrix: matrix,
+        distance: painting.distance+1
+      })
+    })
+  }
+  
   var id = 0
+  
+  var cells = []
   
   var paintCount = 0
   
-  createCell = function() {
-    id += 1 
-    return {
+  createCell = function(params) {
+    
+    result = $.extend({
+      c: 'gray',
       id: id,
       links: [],
-      add: function(side) {
-        var newCell = createCell()
+      add: function(side, cell) {
+        cell = cell || createCell()
         
         this.links.push(createLink($.extend({
-          to: newCell,
+          to: cell,
           command: side,
         }, sides[side])))
         
         var backSide = sides[side].back
         
-        newCell.links.push(createLink($.extend({
+        cell.links.push(createLink($.extend({
           to: this,
           command: backSide,
         }, sides[backSide]))) 
+        
+        return cell
+      },
+      
+      move: function(side) {
+        return this.links.find(function(link) {link.command == side}).to
       },
       
       paintCell: function(painted, depth) {
-        if (depth < 1) {
-          return
-        }
-
-        var list = painted[this.id] = painted[this.id] || []
-
-        if (inList(list)) {
-          return
-        }
-        list.push(ui.transforms.last)
-        
-        ui.rect(-0.5, -0.5, 1, 1, 'gray')
-        paintCount += 1
-        this.links.forEach(function(link) {
-          ui.transform(link.x, link.y, link.z, link.ang)
-          link.to.paintCell(painted, depth-1)
-          ui.untransform()
-        })
+        ui.rect(-0.5, -0.5, 1, 1, this.c)
       },
       
       paint: function() {
+        var maxDistance = maze.maxDistance
+        
+        var q = new Deque()
+        q.enqueue({
+          cell: this, 
+          matrix: ui.transforms.last(),
+          distance: 0
+        })
         paintCount = 0
-        this.paintCell({}, 3)
-        debug(paintCount)
+        set = {}
+        while (!q.isEmpty()) {
+          var painting = q.dequeue()
+          bfs(painting, set, q, maxDistance)
+        }
+        
+        Object.keys(set).forEach(function(cellId) {
+          var cell = cells[cellId]
+          var matrices = set[cellId]
+          
+          matrices.forEach(function(matrix) {
+            ui.transformTo(matrix)
+            cell.paintCell()
+            ui.untransform()
+          })
+        })
       }
-    }
+    }, params)
+    
+    cells[id] = result
+    
+    id += 1 
+    
+    return result
   }
 })()

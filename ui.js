@@ -21,7 +21,7 @@ ui = {
     g.arc(x, y, r, 0, 2*Math.PI, false)
     g.fillStyle = c
     g.fill()
-    g.lineWidth = 1
+    g.lineWidth = 1.0 / this.transforms.last()[0]
     g.strokeStyle = c
     g.stroke()
   },
@@ -47,21 +47,8 @@ ui = {
   },
   
   transform: function(x,y,z,ang) {
-    var a = z * Math.cos(ang)
-    var b = z * Math.sin(ang)
-    var c = - z * Math.sin(ang)
-    var d = z * Math.cos(ang)
-    var e = x
-    var f = y
     var last = this.transforms[this.transforms.length-1]
-    var next = [
-      last[0]*a+last[2]*b,
-      last[1]*a+last[3]*b,
-      last[0]*c+last[2]*d,
-      last[1]*c+last[3]*d,
-      last[0]*e+last[2]*f+last[4],
-      last[1]*e+last[3]*f+last[5]
-    ]
+    var next = transform(last,x,y,z,ang)
     this.transforms.push(next)
     this.setTransform(next)
   },
@@ -82,6 +69,11 @@ ui = {
   
   rotate: function(ang) {
     this.transform(0,0,1,ang)
+  },
+  
+  transformTo: function(matrix) {
+    this.transforms.push(matrix)
+    this.setTransform(matrix)  
   },
   
   gradient: function() {
