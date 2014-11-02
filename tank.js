@@ -1,5 +1,5 @@
 function createTank(params) {
-  tank = createUnit($.extend({
+  tank = createMovingUnit($.extend({
     maxAngularAcceleration: params.speed / params.angularSkid / params.rotateRadius,
     maxAcceleration: params.speed / params.skid,
     minAcceleration: params.canStop ? 0 : params.maxAcceleration,

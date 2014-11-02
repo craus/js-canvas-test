@@ -5,7 +5,9 @@ function createSpace(params) {
     tickCount: 0,
     paint: function() {
       ui.clearDisplay()
+      ui.context()
       units.forEach(call('paint')) 
+      ui.gradient()
     },
     tick: function() {
       for (var i = 0; i < this.ticksPerFrame; i++) {

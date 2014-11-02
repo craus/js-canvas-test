@@ -4,15 +4,17 @@ window.onload = function() {
   
   space = createSpace({
     ticksPerFrame: 300, 
-    speed: 0.1,
+    speed: 0.3,
     inc: function(current, derivative) {
       return current + derivative * this.tickTime
     }
   })
-
+  bounds = createBounds($('#display-div')[0].offsetWidth, $('#display-div')[0].offsetHeight)
+  var xc = (bounds.left + bounds.right)/2
+  var yc = (bounds.top + bounds.bottom)/2
   units = [
     
-    bounds = createBounds($('#display')[0].getBoundingClientRect().width, $('#display')[0].getBoundingClientRect().height),
+    bounds, 
     
     tank = createTank({
       skid: 0.1, 
@@ -20,16 +22,20 @@ window.onload = function() {
       rotateRadius: 10,
       speed: 300,
       canStop: true,
-      x: (bounds.left + bounds.right)/2,
-      y: (bounds.top + bounds.bottom)/2,
+      x: xc,
+      y: yc,
     }),
     
-    ball = createUnit({
+    ball = createMovingUnit({
       details: [
         circleDetail(),
       ],
-      vx: 2,
-      vy: 1,
+      vx: 20,
+      vy: 10,
+    }),
+    
+    maze = createMaze(xc, yc, 25, function(start){
+      start.add('right')
     }),
     
   ]
