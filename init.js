@@ -39,7 +39,7 @@ window.onload = function() {
       vd: 0.02
     }),
     
-    maze = createMaze(xc, yc, 100, mazes.testMaze008)
+    maze = createMaze(xc, yc, 100, mazes.testMaze010)
     
   ]
   

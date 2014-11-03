@@ -18,7 +18,7 @@ function dist(x1, y1, x2, y2) {
 }
 
 function rnd(min, max) {
-  return min + Math.floor(Math.random()*(max-min))
+  return min + Math.random()*(max-min)
 }
 
 function transform(old, x,y,z,ang) {

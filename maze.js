@@ -3,7 +3,7 @@ function createMaze(x, y, z, construct) {
   var start = createCell()
   construct(start)
   start.mapping()
-  var current = cells.last()
+  var current = cells[0]
   var previous = current.links.last().to
   var movedOn = -100500
   var movingTime = 2
@@ -15,10 +15,14 @@ function createMaze(x, y, z, construct) {
       ui.transform(x,y,z,0)
       var currentMovingTime = space.time - movedOn
       var k = Math.max(0,1 - currentMovingTime / movingTime)
-      var link = previous.links.find(function(link) { return link.to == current })
-      ui.transform(link.x * k, link.y * k, Math.pow(link.z, k), link.ang * k)
+      if (k > 0) {
+        var link = previous.links.find(function(link) { return link.to == current })
+        ui.transform(link.x * k, link.y * k, Math.pow(link.z, k), link.ang * k)
+      }
       current.paint()
-      ui.untransform()
+      if (k > 0) {
+        ui.untransform()
+      }
       
       
       debugCounter += 1

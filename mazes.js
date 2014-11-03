@@ -72,5 +72,18 @@ mazes = {
     cells[34].walk('drr').right(cells[48])
     cells[32].walk('uul')
     cells[46].walk('dd').down(cells[54])
+  },
+  
+  testMaze010: function(start) {
+    mazes.testMaze009(start)
+    cells.forEach(function(cell) {
+      cell.links.push(createLink({
+        x: rnd(-1,1),
+        y: rnd(-1,1), 
+        z: rnd(0.05,0.5),
+        ang: rnd(0, Math.PI),
+        to: createCell()
+      }))
+    })
   }
 }
