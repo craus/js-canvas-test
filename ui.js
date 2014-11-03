@@ -14,6 +14,10 @@ ui = {
     canvas.height = h
   },
   
+  color: function(c) {
+    this.g.fillStyle = this.g.strokeStyle = c
+  },
+  
   circle: function(x,y,r,c) {
     var g = this.g
     
@@ -22,6 +26,16 @@ ui = {
     g.fillStyle = c
     g.fill()
     g.lineWidth = 1.0 / this.transforms.last()[0]
+    g.strokeStyle = c
+    g.stroke()
+  },
+  
+  line: function(x1,y1,x2,y2,w,c) {
+    var g = this.g
+    g.beginPath()
+    g.moveTo(x1,y1)
+    g.lineTo(x2,y2)
+    g.lineWidth = w
     g.strokeStyle = c
     g.stroke()
   },
@@ -77,12 +91,12 @@ ui = {
   },
   
   gradient: function() {
-    this.g.rect(200, 0, this.width(), this.height())
+    this.g.rect(0, 0, this.width(), this.height())
     this.transform(this.width()/2, this.height()/2,400,0)
     var grd=this.g.createRadialGradient(0,0,0,0,0,1);
     grd.addColorStop(0,"transparent");
     //grd.addColorStop(0.7,"transparent");
-    grd.addColorStop(1,"rgba(0,0,0,1)");
+    grd.addColorStop(1,"rgba(255,255,255,1)");
 
     this.g.fillStyle=grd;
     this.g.fill()
