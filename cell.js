@@ -24,6 +24,11 @@
   
   var paintCount = 0
   
+  destroyAllCells = function() {
+    cells = []
+    id = 0
+  }
+  
   createCell = function(params) {
     
     result = $.extend({

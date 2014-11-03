@@ -4,6 +4,8 @@ window.onload = function() {
   
   triggers = {}
   
+  currentLevel = mazes.testMaze013
+  
   space = createSpace({
     ticksPerFrame: 1, 
     speed: 0.3,
@@ -16,7 +18,7 @@ window.onload = function() {
   var yc = (bounds.top + bounds.bottom)/2
  
   units = [
-    maze = createMaze(xc, yc, 100, mazes.testMaze012),
+    maze = createMaze(xc, yc, 100, currentLevel),
   ]
   
   spaceTick = setInterval(space.tick.bind(space), 5)
@@ -31,12 +33,21 @@ window.onload = function() {
     $('#tickCount').text(space.tickCount)
   }, 100)
   
+  var restart = function() {
+    units.remove(maze)
+    destroyAllCells()
+    triggers = {}
+    maze = createMaze(xc, yc, 100, currentLevel)
+    units.push(maze)
+  }
+  
   window.onkeydown = function(e) {
     maze.key({
       37: 'left',
       38: 'up',
       39: 'right',
-      40: 'down'
+      40: 'down',
     }[e.keyCode])
+    if (e.keyCode == 82) restart()
   }
 }

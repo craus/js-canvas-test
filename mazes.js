@@ -74,8 +74,7 @@ mazes = {
     cells[46].walk('dd').down(cells[54])
   },
   
-  testMaze010: function(start) {
-    mazes.testMaze009(start)
+  decorate: function() {
     cells.forEach(function(cell) {
       cell.links.push(createLink({
         x: rnd(-1,1),
@@ -84,7 +83,12 @@ mazes = {
         ang: rnd(0, Math.PI),
         to: createCell({decorative: true})
       }))
-    })
+    })  
+  },
+  
+  testMaze010: function(start) {
+    mazes.testMaze009(start)
+    decorate()
   },
   
   testMaze011: function(start) {
@@ -104,6 +108,15 @@ mazes = {
     start.left().up().up().open('yellow').up()
     start.right().down().close('blue').left().up(start)
     start.walk('rrd').left(start.walk('rd'))
+    mazes.decorate()
     return null
+  },
+  
+  testMaze013: function(start) {
+    var r = start.down().open('green').walk('uuuuu')
+    var r2 = r.walk('llluuuurrrrrrddddlll')
+    r2.walk('dddddd').on('green')
+    r2.walk('lluuuuuurrrrddddddl').left(r)
+    mazes.decorate()
   }
 }

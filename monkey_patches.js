@@ -6,6 +6,13 @@ Array.prototype.last = function() {
   return this[this.length-1]
 }
 
+Array.prototype.remove = function(element) {
+  var i = this.indexOf(element);
+  if(i != -1) {
+    this.splice(i, 1);
+  }
+}
+
 Array.prototype.find = function(criteria) {
   for (var i = 0; i < this.length; i++) {
     if (criteria(this[i])) {
