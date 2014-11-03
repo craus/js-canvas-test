@@ -47,7 +47,7 @@ window.onload = function() {
   
   realTime = 0
   setInterval(function() {
-    realTime++
+    realTime += 0.1
     $('#realTime').text(realTime)
     $('#fps').text(space.frameCount / realTime)
     $('#debugInfo').text(JSON.stringify(debugInfo))
