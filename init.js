@@ -21,7 +21,7 @@ window.onload = function() {
       skid: 0.1, 
       angularSkid: 0.1, 
       rotateRadius: 10,
-      speed: 300,
+      speed: 0,
       canStop: true,
       x: xc,
       y: yc,
@@ -29,10 +29,14 @@ window.onload = function() {
     
     ball = createMovingUnit({
       details: [
+        circleDetail({x:5}),
+        circleDetail({y:5}),
+        circleDetail({x:5,y:5}),
         circleDetail(),
       ],
       vx: 20,
       vy: 10,
+      vd: 0.02
     }),
     
     maze = createMaze(xc, yc, 100, mazes.testMaze008)
