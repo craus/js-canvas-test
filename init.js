@@ -12,6 +12,7 @@ window.onload = function() {
   bounds = createBounds($('#display-div')[0].offsetWidth, $('#display-div')[0].offsetHeight)
   var xc = (bounds.left + bounds.right)/2
   var yc = (bounds.top + bounds.bottom)/2
+ 
   units = [
     
     bounds, 
@@ -34,7 +35,7 @@ window.onload = function() {
       vy: 10,
     }),
     
-    maze = createMaze(xc, yc, 50, mazes.testMaze004)
+    maze = createMaze(xc, yc, 100, mazes.testMaze009)
     
   ]
   
@@ -46,5 +47,14 @@ window.onload = function() {
     $('#realTime').text(realTime)
     $('#fps').text(space.frameCount / realTime)
     $('#debugInfo').text(JSON.stringify(debugInfo))
-  }, 1000)
+  }, 100)
+  
+  window.onkeydown = function(e) {
+    maze.key({
+      37: 'left',
+      38: 'up',
+      39: 'right',
+      40: 'down'
+    }[e.keyCode])
+  }
 }

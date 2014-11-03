@@ -32,10 +32,13 @@
     })
   }  
   
-  var bfs = function(painting, set, queue, maxDistance) {
+  var bfs = function(painting, set, queue, maxDistance, startMatrix, maxMatrixDistance) {
     if (painting.distance > maxDistance) {
       return
-    }  
+    } 
+    if (dist(painting.matrix[4], painting.matrix[5], startMatrix[4], startMatrix[5]) > maxMatrixDistance) {
+      return
+    }
     var list = set[painting.cell.id] = set[painting.cell.id] || []
     
     if (inList(list, painting.matrix)) {
@@ -55,7 +58,7 @@
   
   var id = 0
   
-  var cells = []
+  cells = []
   
   var paintCount = 0
   
@@ -83,12 +86,38 @@
         return cell
       },
       
-      move: function(side) {
-        return this.links.find(function(link) {link.command == side}).to
+      move: function(side, cell) {
+        
+        link = this.links.find(function(link) {return link.command == side})
+        if (link != null) {
+          return link.to
+        } else {
+          return this.add(side, cell)
+        }
+      },
+      
+      left: function(cell) { return this.move('left', cell) },
+      up: function(cell) { return this.move('up', cell) },
+      right: function(cell) { return this.move('right', cell) },
+      down: function(cell) { return this.move('down', cell) },
+      
+      go: function(side, count) { 
+        if (count == 0) return this
+        return this.move(side).go(side, count-1)
+      },
+      
+      walk: function(path) {
+        if (path.length == 0) return this
+        return this.move({
+          'l': 'left',
+          'r': 'right',
+          'u': 'up',
+          'd': 'down'
+        }[path[0]]).walk(path.substring(1))
       },
       
       paintCell: function(painted, depth) {
-        ui.rect(-0.5, -0.5, 1, 1, this.c)
+        ui.rect(-0.51, -0.51, 1.02, 1.02, this.c)
       },
       
       paint: function() {
@@ -104,7 +133,7 @@
         set = {}
         while (!q.isEmpty()) {
           var painting = q.dequeue()
-          bfs(painting, set, q, maxDistance)
+          bfs(painting, set, q, maxDistance, ui.transforms.last(), maze.maxMatrixDistance)
         }
         
         Object.keys(set).forEach(function(cellId) {
@@ -117,6 +146,34 @@
             ui.untransform()
           })
         })
+      },
+      
+      mapping: function() {
+        var q = new Deque()
+        q.enqueue({
+          cell: this, 
+          distance: 0
+        })
+        set = {}
+        while (!q.isEmpty()) {
+          var el = q.dequeue()
+          var f = function(){
+            if (!!set[el.cell.id] || set[el.cell.id] == 0) return
+            set[el.cell.id] = el.distance
+            el.cell.links.forEach(function(link) {
+              q.enqueue({
+                cell: link.to,
+                distance: el.distance+1
+              })
+            })
+          }
+          f()
+        }
+        
+        Object.keys(set).forEach(function(cellId) {
+          var cell = cells[cellId]
+          cell.distanceFromStart = set[cellId]
+        })      
       }
     }, params)
     

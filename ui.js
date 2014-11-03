@@ -77,12 +77,12 @@ ui = {
   },
   
   gradient: function() {
-    this.g.rect(0, 0, this.width(), this.height())
-    this.transform(this.width()/2, this.height()/2,200,0)
+    this.g.rect(200, 0, this.width(), this.height())
+    this.transform(this.width()/2, this.height()/2,400,0)
     var grd=this.g.createRadialGradient(0,0,0,0,0,1);
     grd.addColorStop(0,"transparent");
-    grd.addColorStop(0.7,"transparent");
-    grd.addColorStop(1,"rgba(0,0,0,0.5)");
+    //grd.addColorStop(0.7,"transparent");
+    grd.addColorStop(1,"rgba(0,0,0,1)");
 
     this.g.fillStyle=grd;
     this.g.fill()

@@ -12,6 +12,7 @@ Array.prototype.find = function(criteria) {
       return this[i]
     }
   }
+  return null
 }
 
 Math.sign = function(x) {
