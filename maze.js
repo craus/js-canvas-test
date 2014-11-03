@@ -35,8 +35,8 @@ function createMaze(x, y, z, construct) {
       ui.line(-0.1,0, 0,-0.2, 0.03)
       ui.untransform()
     },
-    key: function(command) {
-      //debug(current.links.map(function(link) {return link.command}))      
+    key: function(command) {   
+      if (!command) return
       var target = current.links.find(function(link) {return link.command == command}).to
       if (!target) return
       previous = current
