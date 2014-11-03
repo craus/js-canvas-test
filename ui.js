@@ -15,12 +15,13 @@ ui = {
   },
   
   color: function(c) {
+    c = rgba(c)
     this.g.fillStyle = this.g.strokeStyle = c
   },
   
   circle: function(x,y,r,c) {
     var g = this.g
-    
+    c = rgba(c)
     g.beginPath()
     g.arc(x, y, r, 0, 2*Math.PI, false)
     g.fillStyle = c
@@ -30,8 +31,20 @@ ui = {
     g.stroke()
   },
   
+  circle0: function(x,y,r,c,w) {
+    var g = this.g
+    c = rgba(c)
+    w = w || 1
+    g.beginPath()
+    g.arc(x, y, r, 0, 2*Math.PI, false)
+    g.lineWidth = 1.0 * w / this.transforms.last()[0]
+    g.strokeStyle = c
+    g.stroke()
+  },
+  
   line: function(x1,y1,x2,y2,w,c) {
     var g = this.g
+    c = rgba(c)
     g.beginPath()
     g.moveTo(x1,y1)
     g.lineTo(x2,y2)
@@ -41,6 +54,7 @@ ui = {
   },
   
   rect: function(l,t,w,h,c) {
+    c = rgba(c)
     this.g.fillStyle = c
     this.g.fillRect(l,t,w,h,c)
   },
@@ -85,9 +99,11 @@ ui = {
     this.transform(0,0,1,ang)
   },
   
-  transformTo: function(matrix) {
-    this.transforms.push(matrix)
-    this.setTransform(matrix)  
+  transformByMatrix: function(matrix) {
+    var last = this.transforms.last()
+    var next = transformByMatrix(last,matrix)
+    this.transforms.push(next)
+    this.setTransform(next)
   },
   
   gradient: function() {
@@ -102,4 +118,26 @@ ui = {
     this.g.fill()
     this.untransform()
   },
+  
+  symbolycGrid: function(params) {
+    params.r = params.r || 0.045
+    params.d = params.d || 0.12
+    params.alpha = params.alpha || 0.9
+    for (var i = -2; i <= 2; i++) {
+      for (var j = -2; j <= 2; j++) {
+        var print = false
+        var lighted = false
+        var cross = Math.abs(i) == Math.abs(j)
+        var zero = 1.99 <= dist(i,j) && dist(i,j) <= 2.8
+        
+        if (params.print(cross, zero)) {
+          var cp = params.c
+          if (!params.lighted(cross, zero)) {
+            cp = colors.mix(cp, [0,0,0,0], params.alpha)
+          }
+          ui.circle(i * params.d, j*params.d, params.r, cp)
+        }
+      }
+    }  
+  }
 }

@@ -1,17 +1,59 @@
 function createMaze(x, y, z, construct) {
+
+  var maxDistance = 6
+  var maxMatrixDistance = 3.5
+  
+  var close = function(a, b) {
+    for(var i = a.length; i--;) {
+      if (Math.abs(a[i]-b[i]) > 1e-10)
+        return false;
+    }
+    return true;
+  }
+  
+  var inList = function(list, value) {
+    return list.some(function(t) {
+      return close(t, value)
+    })
+  }  
+  
+  var bfs = function(painting, set, queue) {
+    if (painting.distance > maxDistance) {
+      return
+    } 
+    if (dist(painting.matrix[4], painting.matrix[5]) > maxMatrixDistance) {
+      return
+    }
+    var list = set[painting.cell.id] = set[painting.cell.id] || []
+    
+    if (inList(list, painting.matrix)) {
+      return
+    }
+    list.push(painting.matrix)
+    
+    painting.cell.links.forEach(function(link) {
+      var matrix = transform(painting.matrix, link.x, link.y, link.z, link.ang)
+      queue.enqueue({
+        cell: link.to, 
+        matrix: matrix,
+        distance: painting.distance+1
+      })
+    })
+  }
+
   z = 200
   var start = createCell()
-  construct(start)
+  var current = construct(start) || start
   start.mapping()
-  var current = cells[0]
   var previous = current.links.last().to
   var movedOn = -100500
   var movingTime = 2
-  return createUnit({
-    maxDistance: 6,
-    maxMatrixDistance: 700,
+  var paintingSet = null
+  
+  var result = createUnit({
     start: start,
     paint: function() {
+      
       ui.transform(x,y,z,0)
       var currentMovingTime = space.time - movedOn
       var k = Math.max(0,1 - currentMovingTime / movingTime)
@@ -19,13 +61,23 @@ function createMaze(x, y, z, construct) {
         var link = previous.links.find(function(link) { return link.to == current })
         ui.transform(link.x * k, link.y * k, Math.pow(link.z, k), link.ang * k)
       }
-      current.paint()
+      
+      Object.keys(paintingSet).forEach(function(cellId) {
+        var cell = cells[cellId]
+        var matrices = paintingSet[cellId]
+
+        matrices.forEach(function(matrix) {
+          ui.transformByMatrix(matrix)
+          
+          cell.paintCell()
+          ui.untransform()
+        })
+      })
+      
       if (k > 0) {
         ui.untransform()
       }
       
-      
-      debugCounter += 1
       ui.color('purple')
       ui.circle(0,-0.3,0.1)
       ui.line(0,-0.3, 0,0, 0.03)
@@ -37,12 +89,31 @@ function createMaze(x, y, z, construct) {
     },
     key: function(command) {   
       if (!command) return
-      var target = current.links.find(function(link) {return link.command == command}).to
+      var target = current.links.find(function(link) {return link.command == command})
       if (!target) return
+      target = target.to
+      if (!target.available()) return
       previous = current
       movedOn = space.time
       current = target
-      debug(current.id, current.distanceFromStart)
+      this.moved()
+      current.runTriggers()
+      //debug(current.id, current.distanceFromStart, triggers)
+    },
+    moved: function() {
+      var q = new Deque()
+      q.enqueue({
+        cell: current, 
+        matrix: [1,0,0,1,0,0],
+        distance: 0
+      })
+      paintingSet = {}
+      while (!q.isEmpty()) {
+        var painting = q.dequeue()
+        bfs(painting, paintingSet, q)
+      }     
     }
   })
+  result.moved()
+  return result
 }

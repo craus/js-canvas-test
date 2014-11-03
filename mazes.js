@@ -82,8 +82,28 @@ mazes = {
         y: rnd(-1,1), 
         z: rnd(0.05,0.5),
         ang: rnd(0, Math.PI),
-        to: createCell()
+        to: createCell({decorative: true})
       }))
     })
+  },
+  
+  testMaze011: function(start) {
+    mazes.testMaze010(start)
+    cells[4].addTrigger(colors.red, 'on', false)
+    cells[5].addTrigger(colors.red, 'off', false)
+    cells[6].addTrigger(colors.red, 'on-off', false)
+    cells[0].addCondition(colors.red, false)
+    return cells[3]
+  },
+  
+  testMaze012: function(start) {
+    start.left().close('blue').left().onoff('red').right().right().right().open('red').
+      right().close('yellow').down().onoff('blue')
+    start.right().up().open('blue').up().onoff('yellow').down().left().close('red').down(start).
+      up().left().down(start.left())
+    start.left().up().up().open('yellow').up()
+    start.right().down().close('blue').left().up(start)
+    start.walk('rrd').left(start.walk('rd'))
+    return null
   }
 }

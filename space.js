@@ -4,23 +4,30 @@ function createSpace(params) {
     frameCount: 0,
     tickCount: 0,
     time: 0,
+    minLayer: 0, 
+    maxLayer: 0,
+    expandLayers: function(layer) {
+      this.minLayer = Math.min(this.minLayer, layer)
+      this.maxLayer = Math.max(this.maxLayer, layer)
+    },
     paint: function() {
       debugCounter = 0
       ui.clearDisplay()
       ui.context()
-      units.forEach(call('paint')) 
+      for (ui.layer = this.minLayer; ui.layer <= this.maxLayer; ui.layer++) {
+        units.forEach(call('paint')) 
+      }
       ui.gradient()
     },
     tick: function() {
+      this.frameCount++
       for (var i = 0; i < this.ticksPerFrame; i++) {
         this.tickCount++
         this.time += this.tickTime
         units.forEach(call('tick'))
       }
       this.paint()
-      this.frameCount++
-      $('#frameCount').text(this.frameCount)
-      $('#tickCount').text(this.tickCount)
+
     }
   }, params)
 }

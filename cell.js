@@ -18,44 +18,6 @@
   sides.up.back = 'down'
   sides.down.back = 'up'
       
-  var close = function(a, b) {
-    for(var i = a.length; i--;) {
-      if (Math.abs(a[i]-b[i]) > 1e-10)
-        return false;
-    }
-    return true;
-  }
-  
-  var inList = function(list, value) {
-    return list.some(function(t) {
-      return close(t, value)
-    })
-  }  
-  
-  var bfs = function(painting, set, queue, maxDistance, startMatrix, maxMatrixDistance) {
-    if (painting.distance > maxDistance) {
-      return
-    } 
-    if (dist(painting.matrix[4], painting.matrix[5], startMatrix[4], startMatrix[5]) > maxMatrixDistance) {
-      return
-    }
-    var list = set[painting.cell.id] = set[painting.cell.id] || []
-    
-    if (inList(list, painting.matrix)) {
-      return
-    }
-    list.push(painting.matrix)
-    
-    painting.cell.links.forEach(function(link) {
-      var matrix = transform(painting.matrix, link.x, link.y, link.z, link.ang)
-      queue.enqueue({
-        cell: link.to, 
-        matrix: matrix,
-        distance: painting.distance+1
-      })
-    })
-  }
-  
   var id = 0
   
   cells = []
@@ -65,7 +27,9 @@
   createCell = function(params) {
     
     result = $.extend({
-      c: 'gray',
+      runTriggers: nop,
+      available: function() {return true},
+      c: [128,128,128,1],
       id: id,
       links: [],
       add: function(side, cell) {
@@ -117,37 +81,103 @@
       },
       
       paintCell: function(painted, depth) {
-        ui.rect(-0.51, -0.51, 1.02, 1.02, this.c)
-      },
-      
-      paint: function() {
-        var maxDistance = maze.maxDistance
-        
-        var q = new Deque()
-        q.enqueue({
-          cell: this, 
-          matrix: ui.transforms.last(),
-          distance: 0
-        })
-        paintCount = 0
-        set = {}
-        while (!q.isEmpty()) {
-          var painting = q.dequeue()
-          bfs(painting, set, q, maxDistance, ui.transforms.last(), maze.maxMatrixDistance)
+        debugCounter += 1
+        if (this.decorative) {
+          space.expandLayers(-1)
+          if (ui.layer != -1) {
+            return
+          }
+        }
+        else {
+          if (ui.layer != 0) {
+            return
+          }
         }
         
-        Object.keys(set).forEach(function(cellId) {
-          var cell = cells[cellId]
-          var matrices = set[cellId]
+        var cp = this.c
+        if (!this.available()) {
+          cp = colors.mix(cp, [0,0,0,0], 0.75)
+        }
+        ui.rect(-0.51, -0.51, 1.02, 1.02, cp)
+        if (!!this.condition) {
+          var cond = this.condition
+          var lighted = !this.available()
+          ui.symbolycGrid({
+            print: function(cross, zero) { 
+              return cond.value ? cross : zero
+            }, 
+            lighted: function(cross, zero) {
+              return lighted
+            },
+            c: cond.c,
+            r: 0.015,
+            d: 0.03,
+            alpha: 0.75
+          })        
+        }
+        if (!!this.trigger) {
           
-          matrices.forEach(function(matrix) {
-            ui.transformTo(matrix)
-            cell.paintCell()
-            ui.untransform()
+          var c = this.trigger.c
+          var type = this.trigger.type
+          var cp = c
+          
+          var lighted = type == 'on' && triggers[c] || type == 'off' && !triggers[c] || type == 'on-off'
+          if (!lighted) {
+            cp = colors.mix(cp, [0,0,0,0], 0.25)
+          }
+          ui.circle0(0,0,0.44, cp, 3)
+
+          ui.symbolycGrid({
+            print: function(cross, zero) { 
+              return (type == 'on' || type == 'on-off') && cross ||
+                     (type == 'off' || type == 'on-off') && zero
+            }, 
+            lighted: function(cross, zero) {
+              return (cross && triggers[c] || zero && !triggers[c])
+            },
+            c: this.trigger.c
           })
-        })
+        }
       },
       
+      addTrigger: function(color, type, v) {
+        if (v == undefined) {
+          if (triggers[color] == undefined) {
+            triggers[color] = false
+          }
+          v = triggers[color]
+        }
+        triggers[color] = v
+        this.trigger = {
+          c: color,
+          type: type
+        }
+        this.runTriggers = function() {
+          if (type == 'on') triggers[color] = true
+          if (type == 'off') triggers[color] = false
+          if (type == 'on-off') triggers[color] = !triggers[color]
+        }
+        return this
+      },
+      
+      on: function(c) { this.addTrigger(colors[c], 'on'); return this },
+      off: function(c) { this.addTrigger(colors[c], 'off'); return this },
+      onoff: function(c) { this.addTrigger(colors[c], 'on-off'); return this },
+      
+      addCondition: function(color, v) {
+        this.condition = {
+          c: color,
+          value: v
+        }
+        this.available = function() {
+          return triggers[color] == v
+        }
+        return this
+      },
+      
+      open: function(c) { this.addCondition(colors[c], true); return this },
+      close: function(c) { this.addCondition(colors[c], false); return this },
+     
       mapping: function() {
         var q = new Deque()
         q.enqueue({
