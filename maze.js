@@ -2,6 +2,7 @@ function createMaze(x, y, z, construct) {
 
   var maxDistance = 6
   var maxMatrixDistance = 3.5
+  var movingTime = 2
   
   var close = function(a, b) {
     for(var i = a.length; i--;) {
@@ -35,7 +36,7 @@ function createMaze(x, y, z, construct) {
     list.push(painting.matrix)
     
     painting.cell.links.forEach(function(link) {
-      var matrix = transform(painting.matrix, link.x, link.y, link.z, link.ang)
+      var matrix = transformByMatrix(painting.matrix, link.matrix)
       queue.enqueue({
         cell: link.to, 
         matrix: matrix,
@@ -49,8 +50,8 @@ function createMaze(x, y, z, construct) {
   var current = construct(start) || start
   start.mapping()
   var lastLink = current.links.last().to.links.find(function(link) { return link.to == current })
+  var currentMoveTime = movingTime
   var movedOn = -100500
-  var movingTime = 2
   var paintingSet = null
   
   var result = createUnit({
@@ -59,9 +60,9 @@ function createMaze(x, y, z, construct) {
       
       ui.transform(x,y,z,0)
       var currentMovingTime = space.time - movedOn
-      var k = Math.max(0,1 - currentMovingTime / movingTime)
+      var k = Math.max(0,1 - currentMovingTime / currentMoveTime)
       if (k > 0) {
-        ui.transform(lastLink.x * k, lastLink.y * k, Math.pow(lastLink.z, k), lastLink.ang * k)
+        ui.transformByMatrix(matrixPow(lastLink.matrix, k))
       }
       
       Object.keys(paintingSet).forEach(function(cellId) {
@@ -97,6 +98,7 @@ function createMaze(x, y, z, construct) {
       if (!target.available()) return
       lastLink = link
       movedOn = space.time
+      currentMoveTime = link.movingTime || movingTime
       current = target
       current.visited += 1
       this.moved()

@@ -60,7 +60,7 @@
       link: function(params) {
         var link = createLink(params)
         this.links.push(link)
-        var backLink = createLink({to: this, x: -link.x, y: -link.y, z: 1.0 / link.z, ang: -link.ang})
+        var backLink = createLink({to: this, matrix: inverseMatrix(link.matrix), movingTime: link.movingTime})
         if (link.command) {
           backLink.command = sides[link.command].back
         }

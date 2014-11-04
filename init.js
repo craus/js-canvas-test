@@ -4,7 +4,7 @@ window.onload = function() {
   
   triggers = {}
   
-  currentLevel = mazes.testMaze014
+  currentLevel = mazes.testMaze016
   
   space = createSpace({
     ticksPerFrame: 1, 
@@ -24,10 +24,19 @@ window.onload = function() {
   spaceTick = setInterval(space.tick.bind(space), 5)
   
   realTime = 0
+  var secondTime = 0
+  
   setInterval(function() {
     realTime += 0.1
+    secondTime += 1
+    
     $('#realTime').text(realTime)
-    $('#fps').text(space.frameCount / realTime)
+    
+    if (secondTime == 10) {
+      $('#fps').text(space.frameCount)
+      space.frameCount = 0
+      secondTime = 0
+    }
     $('#debugInfo').text(JSON.stringify(debugInfo))
     $('#frameCount').text(space.frameCount)
     $('#tickCount').text(space.tickCount)

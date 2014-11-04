@@ -23,6 +23,7 @@ function rnd(min, max) {
   return min + Math.random()*(max-min)
 }
 
+identicalMatrix = [1,0,0,1,0,0]
 function transform(old, x,y,z,ang) {
   var a = z * Math.cos(ang)
   var b = z * Math.sin(ang)
@@ -48,6 +49,35 @@ function transformByMatrix(old, mx) {
     old[1]*mx[2]+old[3]*mx[3],
     old[0]*mx[4]+old[2]*mx[5]+old[4],
     old[1]*mx[4]+old[3]*mx[5]+old[5]
+  ]
+}
+
+function inverseMatrix(old) {
+  var a = old[0]*1.0
+  var b = old[1]*1.0
+  var c = old[2]*1.0
+  var d = old[3]*1.0
+  var e = old[4]*1.0
+  var f = old[5]*1.0
+  var D = a*d-b*c
+  return [
+    d/D,
+    -b/D,
+    -c/D,
+    a/D,
+    (c*f-d*e)/D,
+    (b*e-a*f)/D
+  ]
+}
+
+function matrixPow(old, k) {
+  return [
+    old[0] * k + identicalMatrix[0] * (1-k),
+    old[1] * k + identicalMatrix[1] * (1-k),
+    old[2] * k + identicalMatrix[2] * (1-k),
+    old[3] * k + identicalMatrix[3] * (1-k),
+    old[4] * k + identicalMatrix[4] * (1-k),
+    old[5] * k + identicalMatrix[5] * (1-k),
   ]
 }
 

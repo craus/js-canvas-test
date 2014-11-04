@@ -91,7 +91,7 @@ mazes = {
   
   testMaze010: function(start) {
     mazes.testMaze009(start)
-    decorate()
+    mazes.decorate()
   },
   
   testMaze011: function(start) {
@@ -165,7 +165,15 @@ mazes = {
   },
   
   testMaze016: function(start) {
-    start.link({x: 2, ang: 0.5, to: createCell(), command: 'right'})
-      //.link({y: -1.5, to: start, command: 'up'})
+    start.link({x: 2, ang: -0.2, to: createCell(), command: 'right'}).link({x: 2, y: 0.5, ang: -0.1, to: createCell(), command: 'right'})
+    start.link({z: 1.2, y: 1.4, ang: -0.2, movingTime: 5, to: createCell(), command: 'down'})
+    .link({z: 1.2, x: 1.4, ang: -0.2, movingTime: 5, to: createCell(), command: 'right'}).walk('dd')
+
+    start.walk('ruu')
+    //.link({y: -1.5, to: start, command: 'up'})
   },
+  
+  testMaze017: function(start) {
+    start.left().on('red').walk('rr').open('red').walk('rrr')
+  }
 }
