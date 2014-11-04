@@ -14,6 +14,9 @@ mazes = {
   
   testMaze002: function(start) {
     start.add('right', start)
+    mazes.decorate()
+    mazes.decorate()
+    mazes.decorate()
   },
 
   testMaze003: function(start) {
@@ -154,5 +157,15 @@ mazes = {
     cells[75].onoff('green')
     cells[48].onoff('green')
     mazes.decorate()
-  }
+  },
+  
+  testMaze015: function(start) {
+    start.walk('uuurrddd')
+    cells[1].link({x: 2, to: cells[7]})
+  },
+  
+  testMaze016: function(start) {
+    start.link({x: 2, ang: 0.5, to: createCell(), command: 'right'})
+      //.link({y: -1.5, to: start, command: 'up'})
+  },
 }

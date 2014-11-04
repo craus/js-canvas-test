@@ -38,6 +38,7 @@
       c: [128,128,128,1],
       id: id,
       links: [],
+      invisibleCells: [],
       add: function(side, cell) {
         cell = cell || createCell()
         
@@ -54,6 +55,21 @@
         }, sides[backSide]))) 
         
         return cell
+      },
+      
+      link: function(params) {
+        var link = createLink(params)
+        this.links.push(link)
+        var backLink = createLink({to: this, x: -link.x, y: -link.y, z: 1.0 / link.z, ang: -link.ang})
+        if (link.command) {
+          backLink.command = sides[link.command].back
+        }
+        link.to.links.push(backLink) 
+        return link.to
+      },
+      
+      unsee: function(cell) {
+        this.invisibleCells.push(cell)
       },
       
       move: function(side, cell) {

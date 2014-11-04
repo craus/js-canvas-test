@@ -24,6 +24,9 @@ function createMaze(x, y, z, construct) {
     if (dist(painting.matrix[4], painting.matrix[5]) > maxMatrixDistance) {
       return
     }
+    if (current.invisibleCells.indexOf(painting.cell) != -1) {
+      return
+    }
     var list = set[painting.cell.id] = set[painting.cell.id] || []
     
     if (inList(list, painting.matrix)) {
@@ -45,7 +48,7 @@ function createMaze(x, y, z, construct) {
   var start = createCell()
   var current = construct(start) || start
   start.mapping()
-  var previous = current.links.last().to
+  var lastLink = current.links.last().to.links.find(function(link) { return link.to == current })
   var movedOn = -100500
   var movingTime = 2
   var paintingSet = null
@@ -58,8 +61,7 @@ function createMaze(x, y, z, construct) {
       var currentMovingTime = space.time - movedOn
       var k = Math.max(0,1 - currentMovingTime / movingTime)
       if (k > 0) {
-        var link = previous.links.find(function(link) { return link.to == current })
-        ui.transform(link.x * k, link.y * k, Math.pow(link.z, k), link.ang * k)
+        ui.transform(lastLink.x * k, lastLink.y * k, Math.pow(lastLink.z, k), lastLink.ang * k)
       }
       
       Object.keys(paintingSet).forEach(function(cellId) {
@@ -89,11 +91,11 @@ function createMaze(x, y, z, construct) {
     },
     key: function(command) {   
       if (!command) return
-      var target = current.links.find(function(link) {return link.command == command})
-      if (!target) return
-      target = target.to
+      var link = current.links.find(function(link) {return link.command == command})
+      if (!link) return
+      target = link.to
       if (!target.available()) return
-      previous = current
+      lastLink = link
       movedOn = space.time
       current = target
       current.visited += 1
