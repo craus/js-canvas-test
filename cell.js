@@ -32,6 +32,7 @@
   createCell = function(params) {
     
     result = $.extend({
+      visited: 0,
       runTriggers: nop,
       available: function() {return true},
       c: [128,128,128,1],
@@ -102,6 +103,9 @@
         var cp = this.c
         if (!this.available()) {
           cp = colors.mix(cp, [0,0,0,0], 0.75)
+        }
+        if (this.visited > 0) {
+          //cp = colors.mix(cp, [255,192,128,1], 0.25)
         }
         ui.rect(-0.51, -0.51, 1.02, 1.02, cp)
         if (!!this.condition) {

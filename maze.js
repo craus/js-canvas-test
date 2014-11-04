@@ -96,9 +96,11 @@ function createMaze(x, y, z, construct) {
       previous = current
       movedOn = space.time
       current = target
+      current.visited += 1
       this.moved()
       current.runTriggers()
-      //debug(current.id, current.distanceFromStart, triggers)
+      var nonvisited = cells.find(function(cell) { return cell.visited == 0 })
+      debug(current.id, current.visited, nonvisited ? nonvisited.id : -1)
     },
     moved: function() {
       var q = new Deque()
