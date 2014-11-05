@@ -23,7 +23,7 @@ function rnd(min, max) {
   return min + Math.random()*(max-min)
 }
 
-identicalMatrix = [1,0,0,1,0,0]
+identityMatrix = [1,0,0,1,0,0]
 function transform(old, x,y,z,ang) {
   var a = z * Math.cos(ang)
   var b = z * Math.sin(ang)
@@ -72,13 +72,28 @@ function inverseMatrix(old) {
 
 function matrixPow(old, k) {
   return [
-    old[0] * k + identicalMatrix[0] * (1-k),
-    old[1] * k + identicalMatrix[1] * (1-k),
-    old[2] * k + identicalMatrix[2] * (1-k),
-    old[3] * k + identicalMatrix[3] * (1-k),
-    old[4] * k + identicalMatrix[4] * (1-k),
-    old[5] * k + identicalMatrix[5] * (1-k),
+    old[0] * k + identityMatrix[0] * (1-k),
+    old[1] * k + identityMatrix[1] * (1-k),
+    old[2] * k + identityMatrix[2] * (1-k),
+    old[3] * k + identityMatrix[3] * (1-k),
+    old[4] * k + identityMatrix[4] * (1-k),
+    old[5] * k + identityMatrix[5] * (1-k),
   ]
+}
+
+singleCommandTransform = {
+  u: 'r', 
+  r: 'd',
+  d: 'l',
+  l: 'u'
+}
+
+function transformMap(old, delta) {
+  result = {}
+  Object.keys(old).forEach(function(key) {
+    result[key] = old[delta[key]]
+  })
+  return result
 }
 
 

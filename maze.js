@@ -1,8 +1,9 @@
 function createMaze(x, y, z, construct) {
 
   var maxDistance = 6
-  var maxMatrixDistance = 3.5
+  maxPaintingDistance = 3.5
   var movingTime = 2
+  mazeZoom = 1
   
   var close = function(a, b) {
     for(var i = a.length; i--;) {
@@ -19,15 +20,11 @@ function createMaze(x, y, z, construct) {
   }  
   
   var bfs = function(painting, set, queue) {
-    if (painting.distance > maxDistance) {
-      return
-    } 
-    if (dist(painting.matrix[4], painting.matrix[5]) > maxMatrixDistance) {
-      return
-    }
-    if (current.invisibleCells.indexOf(painting.cell) != -1) {
-      return
-    }
+    if (!painting.cell.visible) return
+    if (painting.distance > maxDistance) return
+    if (dist(painting.matrix[4], painting.matrix[5]) > maxPaintingDistance) return
+    if (current.invisibleCells.indexOf(painting.cell) != -1) return
+    
     var list = set[painting.cell.id] = set[painting.cell.id] || []
     
     if (inList(list, painting.matrix)) {
@@ -53,16 +50,28 @@ function createMaze(x, y, z, construct) {
   var currentMoveTime = movingTime
   var movedOn = -100500
   var paintingSet = null
+  var viewTransform = identityMatrix
+  var animationMatrix = null
+  
+  var commandTransform = {
+    u: 'u',
+    r: 'r',
+    d: 'd',
+    l: 'l'
+  }
   
   var result = createUnit({
     start: start,
     paint: function() {
       
-      ui.transform(x,y,z,0)
+      ui.transform(x,y,z * mazeZoom,0)
+      
+      ui.transformByMatrix(viewTransform) // viewTransform
+      
       var currentMovingTime = space.time - movedOn
       var k = Math.max(0,1 - currentMovingTime / currentMoveTime)
       if (k > 0) {
-        ui.transformByMatrix(matrixPow(lastLink.matrix, k))
+        ui.transformByMatrix(matrixPow(animationMatrix, k)) // animation matrix
       }
       
       Object.keys(paintingSet).forEach(function(cellId) {
@@ -78,8 +87,10 @@ function createMaze(x, y, z, construct) {
       })
       
       if (k > 0) {
-        ui.untransform()
+        ui.untransform() // animation matrix
       }
+      
+      ui.untransform() // viewTransform
       
       ui.color('purple')
       ui.circle(0,-0.3,0.1)
@@ -92,11 +103,19 @@ function createMaze(x, y, z, construct) {
     },
     key: function(command) {   
       if (!command) return
+      command = commandTransform[command]
       var link = current.links.find(function(link) {return link.command == command})
       if (!link) return
       target = link.to
       if (!target.available()) return
       lastLink = link
+      animationMatrix = transformByMatrix(transform(identityMatrix, 0,0,1, link.globalRotate * Math.PI / 2), link.matrix)
+      viewTransform = transform(viewTransform, 0, 0, 1, -link.globalRotate * Math.PI / 2)
+      var turns = link.globalRotate
+      if (turns < 0) turns += 4
+      for (var i = 0; i < turns; i++) {
+        commandTransform = transformMap(commandTransform, singleCommandTransform)
+      }
       movedOn = space.time
       currentMoveTime = link.movingTime || movingTime
       current = target

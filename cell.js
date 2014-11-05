@@ -1,22 +1,22 @@
 (function(){
   var sides = {
-    'left': {
+    'l': {
       x: -1
     },
-    'right': {
+    'r': {
       x: 1
     },
-    'up': {
+    'u': {
       y: -1
     },
-    'down': {
+    'd': {
       y: 1
     },
   }
-  sides.left.back = 'right'
-  sides.right.back = 'left'
-  sides.up.back = 'down'
-  sides.down.back = 'up'
+  sides.l.back = 'r'
+  sides.r.back = 'l'
+  sides.u.back = 'd'
+  sides.d.back = 'u'
       
   var id = 0
   
@@ -32,6 +32,7 @@
   createCell = function(params) {
     
     result = $.extend({
+      visible: true,
       visited: 0,
       runTriggers: nop,
       available: function() {return true},
@@ -40,12 +41,14 @@
       links: [],
       invisibleCells: [],
       add: function(side, cell) {
-        cell = cell || createCell()
-        
-        this.links.push(createLink($.extend({
+        var link = createLink($.extend({
           to: cell,
           command: side,
-        }, sides[side])))
+        }, sides[side]))
+        
+        this.links.push(link)
+        
+        cell = link.to
         
         var backSide = sides[side].back
         
@@ -63,9 +66,42 @@
         var backLink = createLink({to: this, matrix: inverseMatrix(link.matrix), movingTime: link.movingTime})
         if (link.command) {
           backLink.command = sides[link.command].back
+          var turns = link.globalRotate
+          if (turns < 0) turns += 4
+          for (var i = 0; i < turns; i++) {
+            backLink.command = singleCommandTransform[backLink.command]
+          }
         }
+        backLink.globalRotate = -link.globalRotate
         link.to.links.push(backLink) 
         return link.to
+      },
+      
+      linkPath: function(path, params) {
+        var matrix = identityMatrix
+        var cell = this
+        for (var i = 0; i < path.length; i++) {
+          var c = path[i]
+          var link = cell.links.find(function(link) { return link.command == c })
+          cell = link.to
+          matrix = transformByMatrix(matrix, link.matrix)
+        }
+        this.link($.extend({to: cell, matrix: matrix}, params))
+      },
+      
+      linkThru: function(cells, params) {
+        var matrix = identityMatrix
+        var cell = this
+        for (var i = 0; i < cells.length; i++) {
+          var next = cells[i]
+          var link = cell.links.find(function(link) { return link.to == next })
+          if (link == null) {
+            console.log('cannot get link from ' + cell.id + ' to ' + next.id)
+          }
+          cell = link.to
+          matrix = transformByMatrix(matrix, link.matrix)
+        }
+        this.link($.extend({to: cell, matrix: matrix}, params))       
       },
       
       unsee: function(cell) {
@@ -82,10 +118,10 @@
         }
       },
       
-      left: function(cell) { return this.move('left', cell) },
-      up: function(cell) { return this.move('up', cell) },
-      right: function(cell) { return this.move('right', cell) },
-      down: function(cell) { return this.move('down', cell) },
+      left: function(cell) { return this.move('l', cell) },
+      up: function(cell) { return this.move('u', cell) },
+      right: function(cell) { return this.move('r', cell) },
+      down: function(cell) { return this.move('d', cell) },
       
       go: function(side, count) { 
         if (count == 0) return this
@@ -94,12 +130,7 @@
       
       walk: function(path) {
         if (path.length == 0) return this
-        return this.move({
-          'l': 'left',
-          'r': 'right',
-          'u': 'up',
-          'd': 'down'
-        }[path[0]]).walk(path.substring(1))
+        return this.move(path[0]).walk(path.substring(1))
       },
       
       paintCell: function(painted, depth) {

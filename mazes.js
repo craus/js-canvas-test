@@ -1,30 +1,30 @@
 mazes = {
   testMaze001: function(start){
-    var x = start.add('right')
-    x = x.add('up')
-    var center = x.add('left')
-    center.add('down', start)
-    x = x.add('up')
-    x = x.add('left')
-    center.add('up', x)
-    x = x.add('left')
-    x = x.add('down')
-    center.add('left', x)
+    var x = start.add('r')
+    x = x.add('u')
+    var center = x.add('l')
+    center.add('d', start)
+    x = x.add('u')
+    x = x.add('l')
+    center.add('u', x)
+    x = x.add('l')
+    x = x.add('d')
+    center.add('l', x)
   },
   
   testMaze002: function(start) {
-    start.add('right', start)
+    start.add('r', start)
     mazes.decorate()
     mazes.decorate()
     mazes.decorate()
   },
 
   testMaze003: function(start) {
-    start.add('right').add('up', start)
+    start.add('r').add('u', start)
   },
   
   testMaze004: function(start) {
-    start.add('right').add('right', start).add('up').add('up', start)
+    start.add('r').add('r', start).add('u').add('u', start)
   },
   
   testMaze005: function(start) {
@@ -48,10 +48,10 @@ mazes = {
   },
   
   testMaze007: function(start) {
-    start.go('right', 9).right(start).go('down', 9).down(start)
+    start.go('r', 9).right(start).go('d', 9).down(start)
     var b = createCell()
     var m = start.go('right', 5)
-    b.go('right', 9).right(b).go('down', 4).down(m).go('down', 4).down(b)
+    b.go('r', 9).right(b).go('d', 4).down(m).go('d', 4).down(b)
   },
   
   testMaze008: function(start) {
@@ -165,15 +165,98 @@ mazes = {
   },
   
   testMaze016: function(start) {
-    start.link({x: 2, ang: -0.2, to: createCell(), command: 'right'}).link({x: 2, y: 0.5, ang: -0.1, to: createCell(), command: 'right'})
-    start.link({z: 1.2, y: 1.4, ang: -0.2, movingTime: 5, to: createCell(), command: 'down'})
-    .link({z: 1.2, x: 1.4, ang: -0.2, movingTime: 5, to: createCell(), command: 'right'}).walk('dd')
-
+    linkParams.movingTime = 20
+    start.link({x: 2, ang: -0.2, command: 'r'}).link({x: 2, y: 0.5, ang: -0.1, command: 'r'})
+    start.link({z: 1.2, y: 1.4, ang: -0.2, command: 'd'})
+    .link({z: 1.2, x: 1.6, ang: -0.2, command: 'r'}).walk('dd')
+    start.walk('dr').linkPath('lur', {command: 'u'})
     start.walk('ruu')
     //.link({y: -1.5, to: start, command: 'up'})
   },
   
   testMaze017: function(start) {
     start.left().on('red').walk('rr').open('red').walk('rrr')
-  }
+  },
+  
+  testMaze018: function(start) {
+    linkParams.movingTime = 5
+    maxPaintingDistance = 5
+    var center = start.link({y: -5, to: createCell({visible: false})})
+    var firstCenter = center
+    var current = start
+    for (var i = 0; i < 6; i++) {
+      nextCenter = center.link({ang: -Math.PI / 12, to: createCell({visible: false})})
+      var next = nextCenter.link({y: 5})
+      current.linkThru([center, nextCenter, next], {command: 'r'})
+      current = next
+      center = nextCenter
+    }
+    var last = current
+    current = start
+    for (var i = 0; i < 4; i++) {
+      current = current.link({y: -1.25, command: 'u'})
+    }
+    center = current
+    current = last
+    for (var i = 0; i < 3; i++) {
+      current = current.link({y: -1.25, command: 'u'})
+    }   
+    center.linkPath('ddddrrrrrruuu', {globalRotate: 1, command: 'r'})
+  },
+  
+  testMaze019: function(start) {
+    linkParams.movingTime = 20
+    start.link({x: 1, ang: -Math.PI / 2, to: start, command: 'r', globalRotate: 1})
+    mazes.decorate()
+    mazes.decorate()
+    mazes.decorate()
+  },
+  
+  testMaze020: function(start) {
+    linkParams.movingTime = 5
+    var a = start.walk('rrddllu').up(start).walk('rr')
+    a = a.walk('rrddl').left(a.walk('dd')).walk('r')
+    a = a.walk('ddllu').up(a.walk('ll'))
+    a.walk('ddrdddddd').link({
+      y: 1, ang: -Math.PI/2, to: a.walk('rrru'), command: 'd', globalRotate: 1
+    })    
+  },
+  
+  testMaze021: function(start) {
+    maxPaintingDistance = 70
+    linkParams.movingTime = 10
+    start.link({to: start, x: -1, z: 0.5, ang: -1.7, command: 'l', globalRotate: 1})
+  },
+  
+  testMaze022: function(start) {
+    maxPaintingDistance = 5
+    linkParams.movingTime = 10
+    var a = start
+    for (var i = 0; i < 5; i++) {
+      a = a.link({y: -2, z: 2, ang: 0.1, command: 'u'})
+    }
+    a = a.link({to: start, y: -2, z: 2, ang: 0.1, command: 'u'})
+    for (var i = 0; i < 5; i++) {
+      a = a.link({x: -2, z: 2, ang: 0.1, command: 'l'})
+    }
+    a = a.link({to: start, x: -2, z: 2, ang: 0.1, command: 'l'})
+    start.linkPath('uuuu', {})
+    start.linkPath('llll', {})
+    //start.link({to: start, x: -2, z: 1, ang: 0.1, command: 'l'})
+  },
+  
+  testMaze023: function(s) {
+    s.walk('rrddddrrruuurr').right(s)
+    cells[14].walk('uuulluu').up(cells[8])
+    cells[6].walk('llllddddlll').left(cells[17])
+    cells[19].walk('lllllllddddrrrrr').right(cells[12])
+    cells[33].walk('dddddlll').left(cells[3])
+    cells[32].walk('uuuuu').up(cells[22])
+    //cells[30].walk('ddddd').link({to: cells[46], 
+  },
+  
+  testMaze024: function(s) {
+    s.walk('rrrddd').down(s, 'l')
+  },
+
 }

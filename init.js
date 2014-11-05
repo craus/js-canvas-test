@@ -4,7 +4,7 @@ window.onload = function() {
   
   triggers = {}
   
-  currentLevel = mazes.testMaze016
+  currentLevel = mazes.testMaze023
   
   space = createSpace({
     ticksPerFrame: 1, 
@@ -52,10 +52,10 @@ window.onload = function() {
   
   window.onkeydown = function(e) {
     maze.key({
-      37: 'left',
-      38: 'up',
-      39: 'right',
-      40: 'down',
+      37: 'l',
+      38: 'u',
+      39: 'r',
+      40: 'd',
     }[e.keyCode])
     if (e.keyCode == 82) restart()
   }
