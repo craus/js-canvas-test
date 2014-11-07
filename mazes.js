@@ -301,5 +301,10 @@ mazes = {
     mazes.decorate()
     mazes.decorate()    
   },
+  
+  testMaze030: function(s) {
+    s.walk('ddddrrruuullll').left(s, 'r', {mirror: true})
+    cells[14].walk('dddddd').down(cells[8], 'r')
+  },
 
 }

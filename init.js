@@ -4,7 +4,7 @@ window.onload = function() {
   
   triggers = {}
   
-  currentLevel = mazes.testMaze022
+  currentLevel = mazes.testMaze030
   
   space = createSpace({
     ticksPerFrame: 1, 

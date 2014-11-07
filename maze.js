@@ -54,6 +54,7 @@ function createMaze(x, y, z, construct) {
   paintingSet = null
   var viewTransform = identityMatrix
   var animationMatrix = null
+  var mirrored = false
   
   var commandTransform = {
     u: 'u',
@@ -106,6 +107,7 @@ function createMaze(x, y, z, construct) {
     },
     key: function(command) {   
       if (!command) return
+      var originalCommand = command
       command = commandTransform[command]
       var link = current.links.find(function(link) {return link.command == command})
       if (!link) return
@@ -119,24 +121,31 @@ function createMaze(x, y, z, construct) {
 
       
       var turns = link.globalRotate
+      if (mirrored) turns = -turns
       if (turns < 0) turns += 4
       for (var i = 0; i < turns; i++) {
         commandTransform = transformMap(commandTransform, singleCommandTransform)
       }      
       
       if (link.mirror) {
+        mirrored = !mirrored
         if (link.command == 'l' || link.command == 'r') {
-          commandTransform = transformMap(commandTransform, singleCommandTransform)
           viewTransform = transform(viewTransform, 0,0,1,Math.PI/2)
           animationMatrix = transform(animationMatrix, 0,0,1,Math.PI/2)
+        }
+        if (originalCommand == 'l' || originalCommand == 'r') {
+          commandTransform = transformMap(commandTransform, singleCommandTransform)
         }
         animationMatrix = mirrorTransform(animationMatrix, link.mirror)   
         viewTransform = mirrorTransform(viewTransform)
         commandTransform = transformMap(commandTransform, mirrorCommandTransform)
-        if (link.command == 'l' || link.command == 'r') {
+        
+        if (originalCommand == 'l' || originalCommand == 'r') {
           for (var i = 0; i < 3; i++) {
             commandTransform = transformMap(commandTransform, singleCommandTransform)
           }
+        }
+        if (link.command == 'l' || link.command == 'r') {
           animationMatrix = transform(animationMatrix, 0,0,1,-Math.PI/2)
           viewTransform = transform(viewTransform, 0,0,1,-Math.PI/2)
         }        
@@ -152,7 +161,7 @@ function createMaze(x, y, z, construct) {
       this.moved()
       current.runTriggers()
       var nonvisited = cells.find(function(cell) { return cell.visited == 0 })
-      debug(current.id, current.visited, nonvisited ? nonvisited.id : -1)
+      debug(current.id, commandTransform, mirrored)
     },
     moved: function() {
       var q = new Deque()
