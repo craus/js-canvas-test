@@ -1,17 +1,39 @@
-defaultLinkParams = { 
-  x: 0, 
-  y: 0,
-  ang: 0,
-  z: 1,
-  globalRotate: 0,
+var sides = {
+  'l': {
+    x: -1
+  },
+  'r': {
+    x: 1
+  },
+  'u': {
+    y: -1
+  },
+  'd': {
+    y: 1
+  },
 }
 
-linkParams = $.extend({}, defaultLinkParams)
+var commands = 'ldru'
+
+linkParams = {}
 
 function createLink(params) {
-  params = $.extend(null, linkParams, params)
+  params = $.extend({
+    x: 0,
+    y: 0,
+    z: 1, 
+    ang: 0,
+    globalRotate: 0,
+    back: function(params) {
+      var result = createLink($.extend({}, this, {
+        matrix: inverseMatrix(this.matrix),
+        globalRotate: -this.globalRotate,
+        command: commands[(commands.indexOf(this.command)+42-this.globalRotate)%4]
+      }, params))
+      return result
+    },
+  }, sides[params.command] || {}, linkParams, params)
   params.to = params.to || createCell()
-  return $.extend({
-    matrix: params.matrix || transform(identityMatrix, params.x, params.y, params.z, params.ang)
-  }, params)
+  params.matrix = params.matrix || transform(identityMatrix, params.x, params.y, params.z, params.ang)
+  return params
 }

@@ -62,6 +62,7 @@ function createMaze(x, y, z, construct) {
   
   var result = createUnit({
     start: start,
+    getCurrent: function() { return current },
     paint: function() {
       
       ui.transform(x,y,z * mazeZoom,0)

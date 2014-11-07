@@ -1,23 +1,4 @@
 (function(){
-  var sides = {
-    'l': {
-      x: -1
-    },
-    'r': {
-      x: 1
-    },
-    'u': {
-      y: -1
-    },
-    'd': {
-      y: 1
-    },
-  }
-  sides.l.back = 'r'
-  sides.r.back = 'l'
-  sides.u.back = 'd'
-  sides.d.back = 'u'
-      
   var id = 0
   
   cells = []
@@ -40,41 +21,16 @@
       id: id,
       links: [],
       invisibleCells: [],
-      add: function(side, cell) {
-        var link = createLink($.extend({
-          to: cell,
-          command: side,
-        }, sides[side]))
-        
-        this.links.push(link)
-        
-        cell = link.to
-        
-        var backSide = sides[side].back
-        
-        cell.links.push(createLink($.extend({
-          to: this,
-          command: backSide,
-        }, sides[backSide]))) 
-        
-        return cell
+      add: function(side, cell, params) {
+        return this.link($.extend({command: side, to: cell}, params))
       },
       
       link: function(params) {
         var link = createLink(params)
         this.links.push(link)
-        var backLink = createLink({to: this, matrix: inverseMatrix(link.matrix), movingTime: link.movingTime})
-        if (link.command) {
-          backLink.command = sides[link.command].back
-          var turns = link.globalRotate
-          if (turns < 0) turns += 4
-          for (var i = 0; i < turns; i++) {
-            backLink.command = singleCommandTransform[backLink.command]
-          }
-        }
-        backLink.globalRotate = -link.globalRotate
-        link.to.links.push(backLink) 
-        return link.to
+        var cell = link.to
+        cell.links.push(link.back({to: this})) 
+        return cell
       },
       
       linkPath: function(path, params) {
@@ -108,20 +64,20 @@
         this.invisibleCells.push(cell)
       },
       
-      move: function(side, cell) {
+      move: function(side, cell, fromSide) {
         
         link = this.links.find(function(link) {return link.command == side})
         if (link != null) {
           return link.to
         } else {
-          return this.add(side, cell)
+          return this.add(side, cell, {fromSide: fromSide})
         }
       },
       
-      left: function(cell) { return this.move('l', cell) },
-      up: function(cell) { return this.move('u', cell) },
-      right: function(cell) { return this.move('r', cell) },
-      down: function(cell) { return this.move('d', cell) },
+      left: function(cell, fromSide) { return this.move('l', cell, fromSide) },
+      up: function(cell, fromSide) { return this.move('u', cell, fromSide) },
+      right: function(cell, fromSide) { return this.move('r', cell, fromSide) },
+      down: function(cell, fromSide) { return this.move('d', cell, fromSide) },
       
       go: function(side, count) { 
         if (count == 0) return this

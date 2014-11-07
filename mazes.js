@@ -204,14 +204,16 @@ mazes = {
     center.linkPath('ddddrrrrrruuu', {globalRotate: 1, command: 'r'})
   },
   
+  // squaare of start with rotating 
   testMaze019: function(start) {
-    linkParams.movingTime = 20
+    linkParams.movingTime = 5
     start.link({x: 1, ang: -Math.PI / 2, to: start, command: 'r', globalRotate: 1})
     mazes.decorate()
     mazes.decorate()
     mazes.decorate()
   },
   
+  // skull with rotating tunnel from bottom to right
   testMaze020: function(start) {
     linkParams.movingTime = 5
     var a = start.walk('rrddllu').up(start).walk('rr')
@@ -222,6 +224,7 @@ mazes = {
     })    
   },
   
+  // infinite spiral of 1 cell
   testMaze021: function(start) {
     maxPaintingDistance = 70
     linkParams.movingTime = 10
@@ -252,7 +255,7 @@ mazes = {
     cells[19].walk('lllllllddddrrrrr').right(cells[12])
     cells[33].walk('dddddlll').left(cells[3])
     cells[32].walk('uuuuu').up(cells[22])
-    //cells[30].walk('ddddd').link({to: cells[46], 
+    cells[35].walk('uuuuurrrddd').down(cells[24])
   },
   
   testMaze024: function(s) {
