@@ -27,13 +27,17 @@ function createLink(params) {
     back: function(params) {
       var result = createLink($.extend({}, this, {
         matrix: inverseMatrix(this.matrix),
-        globalRotate: -this.globalRotate,
-        command: commands[(commands.indexOf(this.command)+42-this.globalRotate)%4]
+        command: this.fromSide,
+        fromSide: this.command,
       }, params))
       return result
     },
   }, sides[params.command] || {}, linkParams, params)
   params.to = params.to || createCell()
-  params.matrix = params.matrix || transform(identityMatrix, params.x, params.y, params.z, params.ang)
+  params.fromSide = params.fromSide || commands[(commands.indexOf(params.command)+42-params.globalRotate) % 4]
+  params.globalRotate = commands.indexOf(params.command)+2-commands.indexOf(params.fromSide)
+  params.ang -= Math.PI /2 * params.globalRotate
+
+  params.matrix = params.matrix || transform(identityMatrix, params.x, params.y, params.z, params.ang)    
   return params
 }

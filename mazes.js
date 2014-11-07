@@ -207,7 +207,8 @@ mazes = {
   // squaare of start with rotating 
   testMaze019: function(start) {
     linkParams.movingTime = 5
-    start.link({x: 1, ang: -Math.PI / 2, to: start, command: 'r', globalRotate: 1})
+    //start.link({x: 1, ang: -Math.PI / 2, to: start, command: 'r', globalRotate: 1})
+    start.right(start, 'u')
     mazes.decorate()
     mazes.decorate()
     mazes.decorate()

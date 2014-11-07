@@ -64,20 +64,20 @@
         this.invisibleCells.push(cell)
       },
       
-      move: function(side, cell, fromSide) {
+      move: function(side, cell, fromSide, params) {
         
         link = this.links.find(function(link) {return link.command == side})
         if (link != null) {
           return link.to
         } else {
-          return this.add(side, cell, {fromSide: fromSide})
+          return this.add(side, cell, $.extend({fromSide: fromSide}, params))
         }
       },
       
-      left: function(cell, fromSide) { return this.move('l', cell, fromSide) },
-      up: function(cell, fromSide) { return this.move('u', cell, fromSide) },
-      right: function(cell, fromSide) { return this.move('r', cell, fromSide) },
-      down: function(cell, fromSide) { return this.move('d', cell, fromSide) },
+      left: function(cell, fromSide, params) { return this.move('l', cell, fromSide, params) },
+      up: function(cell, fromSide, params) { return this.move('u', cell, fromSide, params) },
+      right: function(cell, fromSide, params) { return this.move('r', cell, fromSide, params) },
+      down: function(cell, fromSide, params) { return this.move('d', cell, fromSide, params) },
       
       go: function(side, count) { 
         if (count == 0) return this
