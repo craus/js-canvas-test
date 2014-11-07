@@ -303,8 +303,20 @@ mazes = {
   },
   
   testMaze030: function(s) {
-    s.walk('ddddrrruuullll').left(s, 'r', {mirror: true})
+    s.walk('ddddrrruuulllll').left(s, 'r', {mirror: true})
     cells[14].walk('dddddd').down(cells[8], 'r')
+    cells[18].walk('rrrr').up(cells[4], 'd')
+    cells[7].walk('ddddd').down(cells[23], 'd', {mirror: true})
+    cells[10].walk('uuuuu').up(cells[2], 'l')
   },
+  
+  testMaze031: function(start) {
+    mazeZoom = 0.3
+    maxPaintingDistance = 10
+    linkParams.movingTime = 5
+    start.walk('ddddddd', start, 'r')
+    cells[3].walk('lll')
+    cells[9].left(start, 'u', {mirror:true})
+  }
 
 }

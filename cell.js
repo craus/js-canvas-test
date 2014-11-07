@@ -84,9 +84,14 @@
         return this.move(side).go(side, count-1)
       },
       
-      walk: function(path) {
-        if (path.length == 0) return this
-        return this.move(path[0]).walk(path.substring(1))
+      walk: function(path, cell, fromSide, params) {
+        if (path.length == 1) return this.move(path, cell, fromSide, params)
+        return this.move(path[0]).walk(path.substring(1), cell, fromSide, params)
+      },
+      
+      mirror: function() {
+        this.links.last().mirror = true
+        this.links.last().to.links.last().mirror = true
       },
       
       paintCell: function(painted, depth) {

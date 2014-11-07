@@ -31,7 +31,7 @@ function createLink(params) {
         fromSide: this.command,
       }, params))
       return result
-    },
+    }
   }, sides[params.command] || {}, linkParams, params)
   params.to = params.to || createCell()
   params.fromSide = params.fromSide || commands[(commands.indexOf(params.command)+42-params.globalRotate) % 4]

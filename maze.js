@@ -122,7 +122,7 @@ function createMaze(x, y, z, construct) {
       
       var turns = link.globalRotate
       if (mirrored) turns = -turns
-      if (turns < 0) turns += 4
+      turns = (turns + 40) % 4
       for (var i = 0; i < turns; i++) {
         commandTransform = transformMap(commandTransform, singleCommandTransform)
       }      
