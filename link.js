@@ -22,7 +22,6 @@ function createLink(params) {
     x: 0,
     y: 0,
     z: 1, 
-    ang: 0,
     globalRotate: 0,
     back: function(params) {
       var result = createLink($.extend({}, this, {
@@ -36,7 +35,7 @@ function createLink(params) {
   params.to = params.to || createCell()
   params.fromSide = params.fromSide || commands[(commands.indexOf(params.command)+42-params.globalRotate) % 4]
   params.globalRotate = commands.indexOf(params.command)+2-commands.indexOf(params.fromSide)
-  params.ang -= Math.PI /2 * params.globalRotate
+  params.ang = params.ang || -Math.PI /2 * params.globalRotate
 
   params.matrix = params.matrix || transform(identityMatrix, params.x, params.y, params.z, params.ang)    
   return params
