@@ -84,7 +84,7 @@ mazes = {
         y: rnd(-1,1), 
         z: rnd(0.05,0.5),
         ang: rnd(0, Math.PI),
-        to: createCell({decorative: true})
+        to: createCell({decorative: true, c: [160, 160, 160, 0.7]})
       }))
     })  
   },
@@ -239,14 +239,15 @@ mazes = {
     for (var i = 0; i < 5; i++) {
       a = a.link({y: -2, z: 2, ang: 0.1, command: 'u'})
     }
-    a = a.link({to: start, y: -2, z: 2, ang: 0.1, command: 'u'})
+    a = a.link({to: start, y: -2, z: 2, ang: 0.1, command: 'u', mirror: true})
     for (var i = 0; i < 5; i++) {
       a = a.link({x: -2, z: 2, ang: 0.1, command: 'l'})
     }
-    a = a.link({to: start, x: -2, z: 2, ang: 0.1, command: 'l'})
-    start.linkPath('uuuu', {})
-    start.linkPath('llll', {})
+    a = a.link({to: start, x: -2, z: 2, ang: 0.1, command: 'l', mirror: true})
+    //start.linkPath('uuuu', {})
+    //start.linkPath('llll', {})
     //start.link({to: start, x: -2, z: 1, ang: 0.1, command: 'l'})
+    mazes.decorate()
   },
   
   testMaze023: function(s) {
@@ -261,6 +262,44 @@ mazes = {
   
   testMaze024: function(s) {
     s.walk('rrrddd').down(s, 'l')
+  },
+  
+  // skull with rotating mirroring tunnel from bottom to right
+  testMaze025: function(start) {
+    linkParams.movingTime = 5
+    var a = start.walk('rrdddlluu').up(start).walk('rrd')
+    a = a.walk('rrddl').left(a.walk('dd')).walk('r')
+    a = a.walk('ddllu').up(a.walk('ll'))
+    a.walk('ddrdddddd').down(a.walk('rrru'), 'r', {mirror: true})
+  },
+  
+  testMaze026: function(start) {
+    mazeZoom = 0.3
+    maxPaintingDistance = 10
+    linkParams.movingTime = 5
+    start.walk('dddrr').down(start, 'u', {mirror: true})
+  },
+  
+  testMaze027: function(start) {
+    mazeZoom = 0.3
+    maxPaintingDistance = 10
+    linkParams.movingTime = 5
+    start.walk('dddrr').right(start, 'l', {mirror: true})
+  },
+  
+  testMaze028: function(start) {
+    mazeZoom = 0.3
+    maxPaintingDistance = 10
+    linkParams.movingTime = 5
+    start.walk('dddrr').down(start, 'l', {mirror: true})
+  },
+  
+  testMaze029: function(s) {
+    s.walk('ddr').right(s.walk('ddr'), 'r', {mirror: true})
+    s.up(s, 'u', {mirror: true})
+    mazes.decorate()
+    mazes.decorate()
+    mazes.decorate()    
   },
 
 }

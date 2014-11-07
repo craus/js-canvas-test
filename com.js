@@ -41,6 +41,13 @@ function transform(old, x,y,z,ang) {
   ]
 }
 
+function mirrorTransform(old, mirror) {
+  if (mirror == false) return old
+  return transformByMatrix(old, [
+    -1, 0, 0, 1, 0, 0
+  ])
+}
+
 function transformByMatrix(old, mx) {
   return [
     old[0]*mx[0]+old[2]*mx[1],
@@ -86,6 +93,13 @@ singleCommandTransform = {
   r: 'd',
   d: 'l',
   l: 'u'
+}
+
+mirrorCommandTransform = {
+  u: 'u', 
+  r: 'l',
+  d: 'd',
+  l: 'r'
 }
 
 function transformMap(old, delta) {

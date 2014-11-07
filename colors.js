@@ -21,6 +21,15 @@ colors = {
       1.0 * c[3]*(1-k)+1.0 * c2[3]*k  
     ]
     return result
+  },
+  
+  rnd: function() {
+    return [
+      Math.floor(rnd(0,256)),
+      Math.floor(rnd(0,256)),
+      Math.floor(rnd(0,256)),
+      1
+    ]
   }
 }
 

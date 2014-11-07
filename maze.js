@@ -21,7 +21,9 @@ function createMaze(x, y, z, construct) {
   
   var bfs = function(painting, set, queue) {
     if (!painting.cell.visible) return
-    if (painting.distance > maxDistance) return
+    if (painting.distance > maxDistance) {
+      return
+    }
     if (dist(painting.matrix[4], painting.matrix[5]) > maxPaintingDistance) return
     if (current.invisibleCells.indexOf(painting.cell) != -1) return
     
@@ -49,7 +51,7 @@ function createMaze(x, y, z, construct) {
   var lastLink = current.links.last().to.links.find(function(link) { return link.to == current })
   var currentMoveTime = movingTime
   var movedOn = -100500
-  var paintingSet = null
+  paintingSet = null
   var viewTransform = identityMatrix
   var animationMatrix = null
   
@@ -110,13 +112,39 @@ function createMaze(x, y, z, construct) {
       target = link.to
       if (!target.available()) return
       lastLink = link
-      animationMatrix = transformByMatrix(transform(identityMatrix, 0,0,1, link.globalRotate * Math.PI / 2), link.matrix)
-      viewTransform = transform(viewTransform, 0, 0, 1, -link.globalRotate * Math.PI / 2)
+      
+      animationMatrix = identityMatrix
+
+      animationMatrix = transform(animationMatrix, 0,0,1, link.globalRotate * Math.PI / 2)
+
+      
       var turns = link.globalRotate
       if (turns < 0) turns += 4
       for (var i = 0; i < turns; i++) {
         commandTransform = transformMap(commandTransform, singleCommandTransform)
+      }      
+      
+      if (link.mirror) {
+        if (link.command == 'l' || link.command == 'r') {
+          commandTransform = transformMap(commandTransform, singleCommandTransform)
+          viewTransform = transform(viewTransform, 0,0,1,Math.PI/2)
+          animationMatrix = transform(animationMatrix, 0,0,1,Math.PI/2)
+        }
+        animationMatrix = mirrorTransform(animationMatrix, link.mirror)   
+        viewTransform = mirrorTransform(viewTransform)
+        commandTransform = transformMap(commandTransform, mirrorCommandTransform)
+        if (link.command == 'l' || link.command == 'r') {
+          for (var i = 0; i < 3; i++) {
+            commandTransform = transformMap(commandTransform, singleCommandTransform)
+          }
+          animationMatrix = transform(animationMatrix, 0,0,1,-Math.PI/2)
+          viewTransform = transform(viewTransform, 0,0,1,-Math.PI/2)
+        }        
       }
+      animationMatrix = transformByMatrix(animationMatrix, link.matrix)    
+
+      viewTransform = transform(viewTransform, 0, 0, 1, -link.globalRotate * Math.PI / 2)
+
       movedOn = space.time
       currentMoveTime = link.movingTime || movingTime
       current = target
