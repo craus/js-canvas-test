@@ -33,6 +33,14 @@
         return cell
       },
       
+      unlink: function(to) {
+        var link = this.links.find(function(link) { return link.to == to })
+        this.links.remove(link)
+        var cell = this
+        var backLink = link.to.links.find(function(link2) { return link2.to.id == cell.id })
+        link.to.links.remove(backLink)
+      },
+      
       linkPath: function(path, params) {
         var matrix = identityMatrix
         var cell = this

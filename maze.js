@@ -1,6 +1,6 @@
 function createMaze(x, y, z, construct) {
 
-  var maxDistance = 6
+  maxDistance = 6
   maxPaintingDistance = 3.5
   var movingTime = 2
   mazeZoom = 1
@@ -66,6 +66,11 @@ function createMaze(x, y, z, construct) {
   var result = createUnit({
     start: start,
     getCurrent: function() { return current },
+    setCurrent: function(value) { 
+      debug(value.id)
+      current = value
+      this.moved() 
+    },
     paint: function() {
       
       ui.transform(x,y,z * mazeZoom,0)

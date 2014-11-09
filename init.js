@@ -4,7 +4,7 @@ window.onload = function() {
   
   triggers = {}
   
-  currentLevel = mazes.testMaze030
+  currentLevel = mazes.testMaze032
   
   space = createSpace({
     ticksPerFrame: 1, 
@@ -58,5 +58,7 @@ window.onload = function() {
       40: 'd',
     }[e.keyCode])
     if (e.keyCode == 82) restart()
+    if (e.keyCode == 68) maze.setCurrent(cells[(maze.getCurrent().id+1) % cells.length])
+    if (e.keyCode == 65) maze.setCurrent(cells[(maze.getCurrent().id-1+cells.length) % cells.length])
   }
 }

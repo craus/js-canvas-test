@@ -317,6 +317,49 @@ mazes = {
     start.walk('ddddddd', start, 'r')
     cells[3].walk('lll')
     cells[9].left(start, 'u', {mirror:true})
+  },
+  
+  testMaze032: function(s) {
+    maxDistance = 8
+    //maxPaintingDistance = 5
+    var m = {mirror: true}
+    s.walk('rrrrrrrrrrrrr')
+    cells[4].down(s, 'l', m)
+    cells[9].up(cells[13], 'r', m)
+    cells[3].walk('uuuuu', cells[11], 'd', m)
+    cells[7].walk('ddddrdrddddd')
+    cells[29].down(cells[28], 'd', m)
+    cells[29].walk('rrrrrr', cells[6], 'u')
+    cells[0].walk('ul', cells[3], 'd', m)
+    cells[32].walk('uuuuurrrrr', cells[20], 'l')
+    cells[26].walk('llululuu', cells[43], 'd')
+    cells[30].unlink(cells[31])
+    cells[30].walk('rr', cells[31])
+    cells[42].walk('uuuuu')
+    cells[57].walk('rr', cells[57], 'l', {mirror: true, z: 0.7})
+    cells[25].walk('rrrr', cells[39])
+    cells[32].walk('ddddd')
+    cells[66].down(cells[66], 'd')
+    cells[64].walk('rrrdddlllllldddrrr', cells[64])
+    cells[78].walk('urd', cells[77])
+    cells[72].walk('rul', cells[71])
+    cells[84].walk('urd', cells[85])
+    cells[86].walk('rul', cells[87])
+    cells[88].up(cells[91], 'r', m)
+    cells[89].up(cells[90], 'r', m)
+    cells[89].walk('rrdd', cells[75])
+    steps = {x: -1, z: 0.7, command: 'l'}
+    cells[37].link(steps).link(steps).link(steps).link(steps).link(steps).walk('lll', cells[29], 'l')
+    cells[16].walk('r')
+    cells[39].unlink(cells[40])
+    cells[39].walk('uuu', cells[40])
+    cells[84].walk('lluurr', cells[91], 'u', m)
+    cells[106].walk('dld', cells[93])
+    cells[81].walk('ddd', cells[73], 'd')
+    cells[18].unlink(cells[19])
+    cells[18].walk('ddd', cells[19])
+    cells[115].walk('rrrrr')
+    return cells.last()
   }
 
 }
