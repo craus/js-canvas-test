@@ -16,7 +16,7 @@ function circleDetail(params) {
     right: function() { return this.globalX() + this.globalR() },
     bottom: function() { return this.globalY() + this.globalR() },
     paint: function(){
-      ui.circle(this.globalX(), this.globalY(), this.globalR(), 'red')
+      //ui.circle(this.globalX(), this.globalY(), this.globalR(), 'red')
     },
     collide: function(){
       if (this.left() < bounds.left) this.unit.force(bounds.k * (bounds.left - this.left()), 0)

@@ -1,7 +1,7 @@
 function rgba(c) {
   result = c
   if (c && Object.prototype.toString.call(c) === '[object Array]') {
-    result = 'rgba('+c[0]+', '+c[1]+', '+c[2]+', '+c[3]+')'
+    result = 'rgba('+c[0]+', '+c[1]+', '+c[2]+', '+c[3].toFixed(2)+')'
   }
   return result
 }
@@ -11,6 +11,8 @@ colors = {
   green: [0,255,0,1],
   blue: [0,0,255,1],
   yellow: [255,255,0,1],
+  black: [0,0,0,1],
+  white: [255,255,255,1],
   
   mix: function(c, c2, k) {
     
@@ -21,6 +23,12 @@ colors = {
       1.0 * c[3]*(1-k)+1.0 * c2[3]*k  
     ]
     return result
+  },
+  
+  alpha: function(c, alpha) {
+    return [
+      c[0], c[1], c[2], alpha
+    ]
   },
   
   rnd: function() {

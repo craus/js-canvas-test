@@ -97,13 +97,38 @@
         return this.move(path[0]).walk(path.substring(1), cell, fromSide, params)
       },
       
+      room: function() {
+        var a = arguments
+        var ca = []
+        for (var i = 0; i < a.length; i++) {
+          ca[i] = []
+          for (var j = 0; j < a[i].length; j++) {
+            if (a[i][j] == '#') {
+              ca[i][j] = createCell()
+            } 
+            if (a[i][j] == '$') {
+              ca[i][j] = this
+            }
+          }
+        }
+        for (var i = 0; i < a.length; i++) {
+          for (var j = 0; j < a[i].length; j++) {
+            if (i>0 && !!ca[i][j] && !!ca[i-1][j]) {
+              ca[i][j].up(ca[i-1][j])
+            }
+            if (!!ca[i][j] && !!ca[i][j-1]) {
+              ca[i][j].left(ca[i][j-1])
+            }
+          }
+        }
+      },
+      
       mirror: function() {
         this.links.last().mirror = true
         this.links.last().to.links.last().mirror = true
       },
       
       paintCell: function(painted, depth) {
-        debugCounter += 1
         if (this.decorative) {
           space.expandLayers(-1)
           if (ui.layer != -1) {
@@ -163,6 +188,17 @@
             c: this.trigger.c
           })
         }
+        if (this.isExit) {
+          var globalPhase = (space.time / 100.0) % 1
+          for (var i = 0; i < 4; i++) {
+            var maxRadius = 0.49
+            var phase = (globalPhase+i*0.25) % 1 
+            ui.circle0(0, 0, maxRadius - phase * maxRadius, colors.alpha([colors.white, colors.black][i%2], phase))    
+          }
+          this.runTriggers = function() {
+            moveLevel()
+          }
+        }
       },
       
       addTrigger: function(color, type, v) {
@@ -188,6 +224,8 @@
       on: function(c) { this.addTrigger(colors[c], 'on'); return this },
       off: function(c) { this.addTrigger(colors[c], 'off'); return this },
       onoff: function(c) { this.addTrigger(colors[c], 'on-off'); return this },
+      
+      exit: function() { this.isExit = true },
       
       addCondition: function(color, v) {
         this.condition = {

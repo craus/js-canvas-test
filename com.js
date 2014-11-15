@@ -110,4 +110,8 @@ function transformMap(old, delta) {
   return result
 }
 
+function next(a, x, d) {
+  return a[(a.indexOf(x)+(d || 1)+a.length) % a.length]
+}
+
 

@@ -4,7 +4,35 @@ window.onload = function() {
   
   triggers = {}
   
-  currentLevel = mazes.testMaze032
+  allLevels = mazes.levels
+  availableLevels = allLevels
+  currentLevel = availableLevels[0]
+  
+  maze = null
+  
+  var destroyMaze = function() {
+    units.remove(maze)
+    destroyAllCells()
+    triggers = {}
+  }
+  
+  var buildMaze = function() {
+    units.push(maze = createMaze(xc, yc, 100, currentLevel))  
+  }
+    
+  var restart = function() {
+    destroyMaze()
+    buildMaze()
+  }
+  
+  loadLevel = function(level) {
+    currentLevel = level
+    restart()
+  }
+  
+  moveLevel = function(delta) {
+    loadLevel(next(availableLevels, currentLevel, delta))
+  }
   
   space = createSpace({
     ticksPerFrame: 1, 
@@ -17,9 +45,8 @@ window.onload = function() {
   var xc = (bounds.left + bounds.right)/2
   var yc = (bounds.top + bounds.bottom)/2
  
-  units = [
-    maze = createMaze(xc, yc, 100, currentLevel),
-  ]
+  units = []
+  restart()
   
   spaceTick = setInterval(space.tick.bind(space), 5)
   
@@ -41,14 +68,7 @@ window.onload = function() {
     $('#frameCount').text(space.frameCount)
     $('#tickCount').text(space.tickCount)
   }, 100)
-  
-  var restart = function() {
-    units.remove(maze)
-    destroyAllCells()
-    triggers = {}
-    maze = createMaze(xc, yc, 100, currentLevel)
-    units.push(maze)
-  }
+
   
   window.onkeydown = function(e) {
     maze.key({
@@ -60,5 +80,7 @@ window.onload = function() {
     if (e.keyCode == 82) restart()
     if (e.keyCode == 68) maze.setCurrent(cells[(maze.getCurrent().id+1) % cells.length])
     if (e.keyCode == 65) maze.setCurrent(cells[(maze.getCurrent().id-1+cells.length) % cells.length])
+    if (e.keyCode == 221) moveLevel()
+    if (e.keyCode == 219) moveLevel(-1)
   }
 }

@@ -48,7 +48,7 @@ function createMaze(x, y, z, construct) {
   var start = createCell()
   var current = construct(start) || start
   start.mapping()
-  var lastLink = current.links.last().to.links.find(function(link) { return link.to == current })
+  var lastLink = null
   var currentMoveTime = movingTime
   var movedOn = -100500
   paintingSet = null
@@ -67,7 +67,6 @@ function createMaze(x, y, z, construct) {
     start: start,
     getCurrent: function() { return current },
     setCurrent: function(value) { 
-      debug(value.id)
       current = value
       this.moved() 
     },
@@ -166,7 +165,7 @@ function createMaze(x, y, z, construct) {
       this.moved()
       current.runTriggers()
       var nonvisited = cells.find(function(cell) { return cell.visited == 0 })
-      debug(current.id, commandTransform, mirrored)
+      //debug(current.id, commandTransform, mirrored)
     },
     moved: function() {
       var q = new Deque()
