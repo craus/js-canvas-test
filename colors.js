@@ -11,6 +11,8 @@ colors = {
   green: [0,255,0,1],
   blue: [0,0,255,1],
   yellow: [255,255,0,1],
+  magenta: [255,0,255,1],
+  cyan: [0,255,255,1],
   black: [0,0,0,1],
   white: [255,255,255,1],
   
@@ -41,3 +43,13 @@ colors = {
   }
 }
 
+colors.r = colors.red
+colors.g = colors.green
+colors.b = colors.blue
+colors.y = colors.yellow
+colors.w = colors.white
+colors.c = colors.cyan
+colors.m = colors.magenta
+colors.a = colors.black
+//colors.p = colors.purple
+//colors.o = colors.orange

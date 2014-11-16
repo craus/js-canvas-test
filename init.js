@@ -7,6 +7,7 @@ window.onload = function() {
   allLevels = mazes.levels
   availableLevels = allLevels
   currentLevel = availableLevels[0]
+  //currentLevel = testMazes.testMaze033
   
   maze = null
   

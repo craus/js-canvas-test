@@ -97,18 +97,15 @@
         return this.move(path[0]).walk(path.substring(1), cell, fromSide, params)
       },
       
-      room: function() {
-        var a = arguments
+      room: function(args) {
+        var a = args.map
+        var b = args.keymap || []
+        var legend = args.legend || mazeLibrary.defaultLegend
         var ca = []
         for (var i = 0; i < a.length; i++) {
           ca[i] = []
           for (var j = 0; j < a[i].length; j++) {
-            if (a[i][j] == '#') {
-              ca[i][j] = createCell()
-            } 
-            if (a[i][j] == '$') {
-              ca[i][j] = this
-            }
+            ca[i][j] = legend(this, a[i][j], (b[i] || [])[j])
           }
         }
         for (var i = 0; i < a.length; i++) {
@@ -131,72 +128,76 @@
       paintCell: function(painted, depth) {
         if (this.decorative) {
           space.expandLayers(-1)
-          if (ui.layer != -1) {
-            return
-          }
         }
-        else {
-          if (ui.layer != 0) {
-            return
-          }
-        }
+        if (ui.layer == 0 && !this.decorative || ui.layer == -1 && this.decorative) {
         
-        var cp = this.c
-        if (!this.available()) {
-          cp = colors.mix(cp, [0,0,0,0], 0.75)
-        }
-        if (this.visited > 0) {
-          //cp = colors.mix(cp, [255,192,128,1], 0.25)
-        }
-        ui.rect(-0.51, -0.51, 1.02, 1.02, cp)
-        if (!!this.condition) {
-          var cond = this.condition
-          var lighted = !this.available()
-          ui.symbolycGrid({
-            print: function(cross, zero) { 
-              return cond.value ? cross : zero
-            }, 
-            lighted: function(cross, zero) {
-              return lighted
-            },
-            c: cond.c,
-            r: 0.015,
-            d: 0.03,
-            alpha: 0.75
-          })        
-        }
-        if (!!this.trigger) {
-          
-          var c = this.trigger.c
-          var type = this.trigger.type
-          var cp = c
-          
-          var lighted = type == 'on' && triggers[c] || type == 'off' && !triggers[c] || type == 'on-off'
-          if (!lighted) {
-            cp = colors.mix(cp, [0,0,0,0], 0.25)
+          var cp = this.c
+          if (!this.available()) {
+            cp = colors.mix(cp, [0,0,0,0], 0.75)
           }
-          ui.circle0(0,0,0.44, cp, 3)
+          if (this.visited > 0) {
+            //cp = colors.mix(cp, [255,192,128,1], 0.25)
+          }
+          ui.rect(-0.51, -0.51, 1.02, 1.02, cp)
+          if (!!this.condition) {
+            var cond = this.condition
+            var lighted = !this.available()
+            ui.symbolycGrid({
+              print: function(cross, zero) { 
+                return cond.value ? cross : zero
+              }, 
+              lighted: function(cross, zero) {
+                return lighted
+              },
+              c: cond.c,
+              r: 0.015,
+              d: 0.03,
+              alpha: 0.75
+            })        
+          }
+          if (!!this.trigger) {
+            
+            var c = this.trigger.c
+            var type = this.trigger.type
+            var cp = c
+            
+            var lighted = type == 'on' && triggers[c] || type == 'off' && !triggers[c] || type == 'on-off'
+            if (!lighted) {
+              cp = colors.mix(cp, [0,0,0,0], 0.25)
+            }
+            ui.circle0(0,0,0.44, cp, 3)
 
-          ui.symbolycGrid({
-            print: function(cross, zero) { 
-              return (type == 'on' || type == 'on-off') && cross ||
-                     (type == 'off' || type == 'on-off') && zero
-            }, 
-            lighted: function(cross, zero) {
-              return (cross && triggers[c] || zero && !triggers[c])
-            },
-            c: this.trigger.c
-          })
-        }
-        if (this.isExit) {
-          var globalPhase = (space.time / 100.0) % 1
-          for (var i = 0; i < 4; i++) {
-            var maxRadius = 0.49
-            var phase = (globalPhase+i*0.25) % 1 
-            ui.circle0(0, 0, maxRadius - phase * maxRadius, colors.alpha([colors.white, colors.black][i%2], phase))    
+            ui.symbolycGrid({
+              print: function(cross, zero) { 
+                return (type == 'on' || type == 'on-off') && cross ||
+                       (type == 'off' || type == 'on-off') && zero
+              }, 
+              lighted: function(cross, zero) {
+                return (cross && triggers[c] || zero && !triggers[c])
+              },
+              c: this.trigger.c
+            })
           }
-          this.runTriggers = function() {
-            moveLevel()
+          if (this.isExit) {
+            var globalPhase = (space.time / 100.0) % 1
+            for (var i = 0; i < 4; i++) {
+              var maxRadius = 0.49
+              var phase = (globalPhase+i*0.25) % 1 
+              ui.circle0(0, 0, maxRadius - phase * maxRadius, colors.alpha([colors.white, colors.black][i%2], phase))    
+            }
+            this.runTriggers = function() {
+              moveLevel()
+            }
+          }
+        }
+        if (ui.layer == 1) {
+          if (paintManCopies && maze.getCurrent() == this) {
+
+            ui.transformByMatrix(inverseMatrix(maze.getCurrentAnimationMatrix()))
+            ui.transformByMatrix(inverseMatrix(maze.getViewTransform()))
+            ui.paintMan()
+            ui.untransform()
+            ui.untransform()
           }
         }
       },
@@ -232,6 +233,7 @@
           c: color,
           value: v
         }
+        triggers[color] = false
         this.available = function() {
           return triggers[color] == v
         }

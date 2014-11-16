@@ -1,9 +1,13 @@
 function createMaze(x, y, z, construct) {
 
+  z = 200
   maxDistance = 6
   maxPaintingDistance = 3.5
-  var movingTime = 2
+  movingTime = 2
   mazeZoom = 1
+  paintManCopies = false
+  
+  space.expandLayers(1) // man is painted on 1st layer
   
   var close = function(a, b) {
     for(var i = a.length; i--;) {
@@ -24,6 +28,8 @@ function createMaze(x, y, z, construct) {
     if (painting.distance > maxDistance) {
       return
     }
+    var m = painting.matrix
+    if ((Math.abs(m[0])+Math.abs(m[1])+Math.abs(m[2])+Math.abs(m[3]))*z < 1) return
     if (dist(painting.matrix[4], painting.matrix[5]) > maxPaintingDistance) return
     if (current.invisibleCells.indexOf(painting.cell) != -1) return
     
@@ -44,7 +50,6 @@ function createMaze(x, y, z, construct) {
     })
   }
 
-  z = 200
   var start = createCell()
   var current = construct(start) || start
   start.mapping()
@@ -53,7 +58,7 @@ function createMaze(x, y, z, construct) {
   var movedOn = -100500
   paintingSet = null
   var viewTransform = identityMatrix
-  var animationMatrix = null
+  var animationMatrix = identityMatrix
   var mirrored = false
   
   var commandTransform = {
@@ -70,17 +75,21 @@ function createMaze(x, y, z, construct) {
       current = value
       this.moved() 
     },
+    getCurrentAnimationMatrix: function() {
+      var currentMovingTime = space.time - movedOn
+      var k = Math.max(0,1 - currentMovingTime / currentMoveTime)
+      return matrixPow(animationMatrix, k) // animation matrix
+    },
+    getViewTransform: function() {
+      return viewTransform
+    },
     paint: function() {
       
-      ui.transform(x,y,z * mazeZoom,0)
+      ui.transform(x,y,z * mazeZoom,0) // mazeTransform
       
       ui.transformByMatrix(viewTransform) // viewTransform
       
-      var currentMovingTime = space.time - movedOn
-      var k = Math.max(0,1 - currentMovingTime / currentMoveTime)
-      if (k > 0) {
-        ui.transformByMatrix(matrixPow(animationMatrix, k)) // animation matrix
-      }
+      ui.transformByMatrix(this.getCurrentAnimationMatrix())
       
       Object.keys(paintingSet).forEach(function(cellId) {
         var cell = cells[cellId]
@@ -94,20 +103,11 @@ function createMaze(x, y, z, construct) {
         })
       })
       
-      if (k > 0) {
-        ui.untransform() // animation matrix
-      }
+      ui.untransform() // animation matrix
       
       ui.untransform() // viewTransform
-      
-      ui.color('purple')
-      ui.circle(0,-0.3,0.1)
-      ui.line(0,-0.3, 0,0, 0.03)
-      ui.line(0.1,0.3, 0,0, 0.03)
-      ui.line(-0.1,0.3, 0,0, 0.03)
-      ui.line(0.1,0, 0,-0.2, 0.03)
-      ui.line(-0.1,0, 0,-0.2, 0.03)
-      ui.untransform()
+      ui.paintMan()
+      ui.untransform() // mazeTransform
     },
     key: function(command) {   
       if (!command) return
@@ -165,7 +165,7 @@ function createMaze(x, y, z, construct) {
       this.moved()
       current.runTriggers()
       var nonvisited = cells.find(function(cell) { return cell.visited == 0 })
-      //debug(current.id, commandTransform, mirrored)
+      debug(current.id, commandTransform, mirrored)
     },
     moved: function() {
       var q = new Deque()

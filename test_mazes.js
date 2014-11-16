@@ -14,9 +14,9 @@ testMazes = {
   
   testMaze002: function(start) {
     start.add('r', start)
-    mazes.decorate()
-    mazes.decorate()
-    mazes.decorate()
+    mazeLibrary.decorate()
+    mazeLibrary.decorate()
+    mazeLibrary.decorate()
   },
 
   testMaze003: function(start) {
@@ -70,32 +70,20 @@ testMazes = {
   },
   
   testMaze009: function(start) {
-    mazes.testMaze008(start)
+    testMazes.testMaze008(start)
     cells[19].walk('lldll')
     cells[34].walk('drr').right(cells[48])
     cells[32].walk('uul')
     cells[46].walk('dd').down(cells[54])
   },
   
-  decorate: function() {
-    cells.forEach(function(cell) {
-      cell.links.push(createLink({
-        x: rnd(-1,1),
-        y: rnd(-1,1), 
-        z: rnd(0.05,0.5),
-        ang: rnd(0, Math.PI),
-        to: createCell({decorative: true, c: [160, 160, 160, 0.7]})
-      }))
-    })  
-  },
-  
   testMaze010: function(start) {
-    mazes.testMaze009(start)
-    mazes.decorate()
+    testMazes.testMaze009(start)
+    mazeLibrary.decorate()
   },
   
   testMaze011: function(start) {
-    mazes.testMaze010(start)
+    testMazes.testMaze010(start)
     cells[4].addTrigger(colors.red, 'on', false)
     cells[5].addTrigger(colors.red, 'off', false)
     cells[6].addTrigger(colors.red, 'on-off', false)
@@ -111,7 +99,7 @@ testMazes = {
     start.left().up().up().open('yellow').up()
     start.right().down().close('blue').left().up(start)
     start.walk('rrd').left(start.walk('rd'))
-    mazes.decorate()
+    mazeLibrary.decorate()
     return null
   },
   
@@ -120,7 +108,7 @@ testMazes = {
     var r2 = r.walk('llluuuurrrrrrddddlll')
     r2.walk('dddddd').on('green')
     r2.walk('lluuuuuurrrrddddddl').left(r)
-    mazes.decorate()
+    mazeLibrary.decorate()
   },
   
   testMaze014: function(start) {
@@ -156,7 +144,7 @@ testMazes = {
     cells[50].off('blue')
     cells[75].onoff('green')
     cells[48].onoff('green')
-    mazes.decorate()
+    mazeLibrary.decorate()
   },
   
   testMaze015: function(start) {
@@ -209,9 +197,9 @@ testMazes = {
     linkParams.movingTime = 5
     //start.link({x: 1, ang: -Math.PI / 2, to: start, command: 'r', globalRotate: 1})
     start.right(start, 'u')
-    mazes.decorate()
-    mazes.decorate()
-    mazes.decorate()
+    mazeLibrary.decorate()
+    mazeLibrary.decorate()
+    mazeLibrary.decorate()
   },
   
   // skull with rotating tunnel from bottom to right
@@ -247,7 +235,7 @@ testMazes = {
     //start.linkPath('uuuu', {})
     //start.linkPath('llll', {})
     //start.link({to: start, x: -2, z: 1, ang: 0.1, command: 'l'})
-    mazes.decorate()
+    mazeLibrary.decorate()
   },
   
   testMaze023: function(s) {
@@ -297,9 +285,9 @@ testMazes = {
   testMaze029: function(s) {
     s.walk('ddr').right(s.walk('ddr'), 'r', {mirror: true})
     s.up(s, 'u', {mirror: true})
-    mazes.decorate()
-    mazes.decorate()
-    mazes.decorate()    
+    mazeLibrary.decorate()
+    mazeLibrary.decorate()
+    mazeLibrary.decorate()    
   },
   
   testMaze030: function(s) {
@@ -360,5 +348,33 @@ testMazes = {
     cells[18].walk('ddd', cells[19])
     cells[115].walk('rrrrr')
     return cells.last()
-  }
+  },
+  
+  testMaze033: function(start) {
+    start.room({
+      legend: mazes.defaultLegend,
+      map: [
+        '.#@#.',
+        '.G.B.',
+        '.BYG.',
+        '..R..',
+        '.b#g.',
+        'y#GBy',
+        '#R.b#',
+        'rGBY#',
+        '.$Rr.'
+      ], 
+      keymap: [
+        '.#@#.',
+        '.0.0.',
+        '.111.',
+        '..0..',
+        '.0#2.',
+        '1#100',
+        '#1.1#',
+        '0010#',
+        '.$01.'
+      ]
+    })
+  },
 }
