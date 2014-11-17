@@ -13,7 +13,7 @@ var sides = {
   },
 }
 
-var commands = 'ldru'
+commands = 'ldru'
 
 linkParams = {}
 

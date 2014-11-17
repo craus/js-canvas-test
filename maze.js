@@ -109,12 +109,38 @@ function createMaze(x, y, z, construct) {
       ui.paintMan()
       ui.untransform() // mazeTransform
     },
-    key: function(command) {   
+    key: function(command, e) {   
       if (!command) return
       var originalCommand = command
       command = commandTransform[command]
       var link = current.links.find(function(link) {return link.command == command})
-      if (!link) return
+      if (!link) {
+        if (dev.on) {
+          if (e.shiftKey) {
+            dev.selectedCell = current
+            dev.selectedSide = command
+          } else if (e.ctrlKey) {
+            operations.push(operationSeparator)
+            current.move(command, dev.selectedCell, dev.selectedSide)
+            dev.selectedCell = dev.selectedSide = null
+            this.key(originalCommand)
+          }
+        }
+        return
+      }
+      (function() {
+        var saveCurrent = current
+        var saveMirrored = mirrored
+        var saveAnimationMatrix = animationMatrix
+        var saveViewTransform = viewTransform
+        operations.push(function() {
+          current = saveCurrent
+          mirrored = saveMirrored
+          animationMatrix = saveAnimationMatrix
+          viewTransform = saveViewTransform
+        })      
+      })()
+
       target = link.to
       if (!target.available()) return
       lastLink = link
@@ -182,5 +208,6 @@ function createMaze(x, y, z, construct) {
     }
   })
   result.moved()
+  operations = [operationSeparator]
   return result
 }

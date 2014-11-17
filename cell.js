@@ -27,9 +27,16 @@
       
       link: function(params) {
         var link = createLink(params)
+        
         this.links.push(link)
         var cell = link.to
-        cell.links.push(link.back({to: this})) 
+        var backLink = link.back({to: this})
+        cell.links.push(backLink) 
+        var that = this
+        operations.push(function() {
+          that.links.remove(link)
+          cell.links.remove(backLink)
+        })
         return cell
       },
       
@@ -199,6 +206,11 @@
             ui.untransform()
             ui.untransform()
           }
+          if (dev.selectedCell == this) {
+            ui.transform(0,0,1,-Math.PI/2 *(2+ commands.indexOf(dev.selectedSide[0])))
+            ui.line(0.51, 0.51, 0.51, -0.51, 0.02, colors.red)
+            ui.untransform()
+          }
         }
       },
       
@@ -275,6 +287,10 @@
     cells[id] = result
     
     id += 1 
+    operations.push(function() {
+      cells.remove(result)
+      id -= 1
+    })
     
     return result
   }
