@@ -133,11 +133,13 @@ function createMaze(x, y, z, construct) {
         var saveMirrored = mirrored
         var saveAnimationMatrix = animationMatrix
         var saveViewTransform = viewTransform
+        var saveCommandTransform = commandTransform
         operations.push(function() {
           current = saveCurrent
           mirrored = saveMirrored
           animationMatrix = saveAnimationMatrix
           viewTransform = saveViewTransform
+          commandTransform = saveCommandTransform
         })      
       })()
 

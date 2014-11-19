@@ -102,12 +102,15 @@ window.onload = function() {
       40: 'd',
     }[e.keyCode], e)
     if (e.keyCode == 82) restart()
-    if (e.keyCode == 68) maze.setCurrent(cells[(maze.getCurrent().id+1) % cells.length])
-    if (e.keyCode == 65) maze.setCurrent(cells[(maze.getCurrent().id-1+cells.length) % cells.length])
+    if (e.keyCode == 34) maze.setCurrent(cells[(maze.getCurrent().id+1) % cells.length])
+    if (e.keyCode == 46) maze.setCurrent(cells[(maze.getCurrent().id-1+cells.length) % cells.length])
+    if (e.keyCode == 36) maze.setCurrent(dev.selectedCell)
     if (e.keyCode == 221) moveLevel()
     if (e.keyCode == 219) moveLevel(-1)
     if (e.keyCode == 90 && e.ctrlKey) undo()
-    if (e.keyCode == 83 && e.ctrlKey) { saveLevel(); e.preventDefault(); }
+    if (e.keyCode == 83 && e.ctrlKey) { writeLevel(); e.preventDefault(); }
+    if (e.keyCode == 76 && e.ctrlKey) { readLevel(); e.preventDefault(); }
     if (e.keyCode == 27) cancel()
+    console.log(e.keyCode)
   }
 }

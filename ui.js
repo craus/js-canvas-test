@@ -106,17 +106,24 @@ ui = {
     this.setTransform(next)
   },
   
-  gradient: function() {
+  gradient: function(c) {
     this.g.rect(0, 0, this.width(), this.height())
     this.transform(this.width()/2, this.height()/2,400,0)
     var grd=this.g.createRadialGradient(0,0,0,0,0,1);
-    grd.addColorStop(0,"transparent");
+    var transparent = [c[0],c[1],c[2],0]
+    grd.addColorStop(0,rgba(transparent));
     //grd.addColorStop(0.7,"transparent");
-    grd.addColorStop(1,"rgba(255,255,255,1)");
+    grd.addColorStop(1,rgba(c));
 
     this.g.fillStyle=grd;
     this.g.fill()
     this.untransform()
+  },
+  
+  fillDisplay: function(c) {
+    this.g.rect(0, 0, this.width(), this.height())
+    this.g.fillStyle=rgba(c);
+    this.g.fill()
   },
   
   symbolycGrid: function(params) {
