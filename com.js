@@ -88,6 +88,14 @@ function matrixPow(old, k) {
   ]
 }
 
+function closeMatrices(a,b) {
+    for(var i = a.length; i--;) {
+      if (Math.abs(a[i]-b[i]) > 1e-10)
+        return false;
+    }
+    return true;
+  }
+
 singleCommandTransform = {
   u: 'r', 
   r: 'd',

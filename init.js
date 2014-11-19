@@ -8,12 +8,7 @@ window.onload = function() {
   availableLevels = allLevels
   currentLevel = availableLevels[0]
   currentLevel = testMazes.testMaze032
-  
-  dev = {
-    on: true,
-    selectedCell: null,
-    selectedSide: null,
-  }
+
   operationSeparator = {}
   operations = []
   currentLevel = function(){}
@@ -79,20 +74,7 @@ window.onload = function() {
     $('#tickCount').text(space.tickCount)
   }, 100)
 
-  undo = function() {
-    while (operations.last() != operationSeparator) {
-      operations.pop()()
-    }
-    operations.pop()
-    if (operations.length == 0) {
-      operations.push(operationSeparator)
-    }
-    maze.moved()
-  }
-  
-  cancel = function() {
-    dev.selectedCell = dev.selectedSide = null
-  }
+
   
   window.onkeydown = function(e) {
     maze.key({
@@ -107,10 +89,11 @@ window.onload = function() {
     if (e.keyCode == 36) maze.setCurrent(dev.selectedCell)
     if (e.keyCode == 221) moveLevel()
     if (e.keyCode == 219) moveLevel(-1)
-    if (e.keyCode == 90 && e.ctrlKey) undo()
+    if (e.keyCode == 90 && e.ctrlKey) dev.undo()
     if (e.keyCode == 83 && e.ctrlKey) { writeLevel(); e.preventDefault(); }
     if (e.keyCode == 76 && e.ctrlKey) { readLevel(); e.preventDefault(); }
-    if (e.keyCode == 27) cancel()
-    console.log(e.keyCode)
+    if (e.keyCode == 27) dev.cancel()
+    if (e.keyCode == 32) dev.mirrorSelection()
+    console.log(e)
   }
 }

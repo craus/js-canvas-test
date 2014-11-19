@@ -31,25 +31,44 @@ function createLink(params) {
         fromSide: this.command,
       }, params))
       return result
-    }
+    },
+    mirrorTransform: function() {
+      var mx = this.matrix
+      this.matrix = identityMatrix
+      if (this.command == 'l' || this.command == 'r') {
+        this.matrix = transform(this.matrix, 0,0,1, Math.PI/2)
+      }
+      this.matrix = mirrorTransform(this.matrix)
+      if (this.command == 'l' || this.command == 'r') {
+        this.matrix = transform(this.matrix, 0,0,1, -Math.PI/2)
+      }  
+      this.matrix = transformByMatrix(this.matrix, mx)
+    },
+    findBackLink: function(from) {
+      var mx = this.matrix
+      var that = this
+      return this.to.links.find(function(link) { 
+        return link.to == from && closeMatrices(transformByMatrix(mx, link.matrix), identityMatrix) && link != that
+      })
+    },
+    destroy: function(from) {
+      from.links.remove(this)
+      var backLink = this.findBackLink(from)
+      this.to.links.remove(backLink)
+      var that = this
+      operations.push(function() {
+        from.links.push(that)
+        this.to.links.push(backLink)
+      })
+    },
   }, sides[params.command] || {}, linkParams, params)
   params.to = params.to || createCell()
   params.fromSide = params.fromSide || commands[(commands.indexOf(params.command)+42-params.globalRotate) % 4]
   params.globalRotate = commands.indexOf(params.command)+2-commands.indexOf(params.fromSide)
   params.ang = params.ang || -Math.PI /2 * params.globalRotate
   if (!params.matrix) {
-    params.matrix = identityMatrix
-    if (params.mirror) {
-      if (params.command == 'l' || params.command == 'r') {
-        params.matrix = transform(params.matrix, 0,0,1, Math.PI/2)
-      }
-      params.matrix = mirrorTransform(params.matrix)
-      if (params.command == 'l' || params.command == 'r') {
-        params.matrix = transform(params.matrix, 0,0,1, -Math.PI/2)
-      }
-    }
-    params.matrix = transform(params.matrix, params.x, params.y, params.z, params.ang)    
-
+    params.matrix = transform(identityMatrix, params.x, params.y, params.z, params.ang)    
+    if (params.mirror) params.mirrorTransform()
   }
   return params
 }

@@ -9,17 +9,9 @@ function createMaze(x, y, z, construct) {
   
   space.expandLayers(1) // man is painted on 1st layer
   
-  var close = function(a, b) {
-    for(var i = a.length; i--;) {
-      if (Math.abs(a[i]-b[i]) > 1e-10)
-        return false;
-    }
-    return true;
-  }
-  
   var inList = function(list, value) {
     return list.some(function(t) {
-      return close(t, value)
+      return closeMatrices(t, value)
     })
   }  
   
@@ -114,18 +106,30 @@ function createMaze(x, y, z, construct) {
       var originalCommand = command
       command = commandTransform[command]
       var link = current.links.find(function(link) {return link.command == command})
-      if (!link) {
-        if (dev.on) {
-          if (e.shiftKey) {
-            dev.selectedCell = current
-            dev.selectedSide = command
-          } else if (e.ctrlKey) {
+
+      e = e || {}
+      
+      if (dev.on) {
+        if (e.shiftKey) {
+          dev.selectedCell = current
+          dev.selectedSide = command
+          return
+        } else if (e.ctrlKey) {
+          if (!link) {
             operations.push(operationSeparator)
+            var oldLink = dev.selectedLink()
+            if (oldLink != null) {
+              console.log('destroy')
+              oldLink.destroy(dev.selectedCell)
+            }
             current.move(command, dev.selectedCell, dev.selectedSide)
             dev.selectedCell = dev.selectedSide = null
             this.key(originalCommand)
+            return
           }
         }
+      }
+      if (!link) {
         return
       }
       (function() {
