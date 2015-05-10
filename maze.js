@@ -125,8 +125,11 @@ function createMaze(x, y, z, construct) {
               }
             }
             current.move(command, dev.selectedCell, dev.selectedSide, {noBackLink: e.altKey})
-            dev.selectedCell = dev.selectedSide = null
-            this.key(originalCommand)
+            if (!e.altKey) {
+              this.key(originalCommand)
+              dev.selectedCell = dev.selectedSide = null
+            }
+            this.moved()
             return
           }
         }
