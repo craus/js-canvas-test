@@ -77,23 +77,24 @@ window.onload = function() {
 
   
   window.onkeydown = function(e) {
-    maze.key({
-      37: 'l',
-      38: 'u',
-      39: 'r',
-      40: 'd',
-    }[e.keyCode], e)
-    if (e.keyCode == 82) restart()
+    var mazeKeys = {}
+    mazeKeys[keycodes.left] = 'l'
+    mazeKeys[keycodes.up] = 'u'
+    mazeKeys[keycodes.right] = 'r'
+    mazeKeys[keycodes.down] = 'd'
+    maze.key(mazeKeys[e.keyCode], e)
+    
+    if (e.keyCode == keycodes.character('R')) restart()
     if (e.keyCode == keycodes.pageDown) maze.setCurrent(cells[(maze.getCurrent().id+1) % cells.length])
     if (e.keyCode == keycodes.del) maze.setCurrent(cells[(maze.getCurrent().id-1+cells.length) % cells.length])
-    if (e.keyCode == 36) maze.setCurrent(dev.selectedCell)
-    if (e.keyCode == 221) moveLevel()
-    if (e.keyCode == 219) moveLevel(-1)
-    if (e.keyCode == 90 && e.ctrlKey) dev.undo()
-    if (e.keyCode == 83 && e.ctrlKey) { writeLevel(); e.preventDefault(); }
-    if (e.keyCode == 76 && e.ctrlKey) { readLevel(); e.preventDefault(); }
-    if (e.keyCode == 27) dev.cancel()
-    if (e.keyCode == 32) dev.mirrorSelection()
+    if (e.keyCode == keycodes.home) maze.setCurrent(dev.selectedCell)
+    if (e.keyCode == keycodes.closeBracket) moveLevel()
+    if (e.keyCode == keycodes.openBracket) moveLevel(-1)
+    if (e.keyCode == keycodes.character('Z') && e.ctrlKey) dev.undo()
+    if (e.keyCode == keycodes.character('S') && e.ctrlKey) { writeLevel(); e.preventDefault(); }
+    if (e.keyCode == keycodes.character('L') && e.ctrlKey) { readLevel(); e.preventDefault(); }
+    if (e.keyCode == keycodes.esc) dev.cancel()
+    if (e.keyCode == keycodes.space) dev.mirrorSelection()
     console.log(e)
   }
 }
