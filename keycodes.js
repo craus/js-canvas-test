@@ -11,4 +11,6 @@ keycodes = {
   home: 36,
   esc: 27,
   space: 32, // this possibly should be character(' ')
+  plus: 187, 
+  minus: 189,
 }

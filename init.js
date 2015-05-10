@@ -95,6 +95,7 @@ window.onload = function() {
     if (e.keyCode == keycodes.character('L') && e.ctrlKey) { readLevel(); e.preventDefault(); }
     if (e.keyCode == keycodes.esc) dev.cancel()
     if (e.keyCode == keycodes.space) dev.mirrorSelection()
-    console.log(e)
+    if (e.keyCode == keycodes.plus) { dev.zoomSelectionUp() }
+    if (e.keyCode == keycodes.minus) { dev.zoomSelectionDown() }
   }
 }
