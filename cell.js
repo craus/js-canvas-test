@@ -21,6 +21,8 @@
       id: id,
       links: [],
       invisibleCells: [],
+      items: [],
+      
       add: function(side, cell, params) {
         return this.link($.extend({command: side, to: cell}, params))
       },
@@ -30,12 +32,16 @@
         
         this.links.push(link)
         var cell = link.to
-        var backLink = link.back({to: this})
-        cell.links.push(backLink) 
+        if (!params.noBackLink) {
+          var backLink = link.back({to: this})
+          cell.links.push(backLink) 
+        }
         var that = this
         operations.push(function() {
           that.links.remove(link)
-          cell.links.remove(backLink)
+          if (!params.noBackLink) {
+            cell.links.remove(backLink)
+          }
         })
         return cell
       },
@@ -198,6 +204,13 @@
           }
         }
         if (ui.layer == 1) {
+          if (this.items.length > 0) {
+            ui.zoom(0.5)
+            this.items[0].paint()
+            ui.untransform()
+          }
+        }
+        if (ui.layer == 2) {
           if (paintManCopies && maze.getCurrent() == this) {
 
             ui.transformByMatrix(inverseMatrix(maze.getCurrentAnimationMatrix()))
@@ -254,6 +267,10 @@
       
       open: function(c) { this.addCondition(colors[c], true); return this },
       close: function(c) { this.addCondition(colors[c], false); return this },
+      
+      key: function(color) {
+        this.items.push(createKey(color))
+      },
      
       mapping: function() {
         var q = new Deque()

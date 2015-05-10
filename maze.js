@@ -7,7 +7,7 @@ function createMaze(x, y, z, construct) {
   mazeZoom = 1
   paintManCopies = false
   
-  space.expandLayers(1) // man is painted on 1st layer
+  space.expandLayers(2) // man is painted on 1st layer
   
   var inList = function(list, value) {
     return list.some(function(t) {
@@ -117,12 +117,14 @@ function createMaze(x, y, z, construct) {
         } else if (e.ctrlKey) {
           if (!link) {
             operations.push(operationSeparator)
-            var oldLink = dev.selectedLink()
-            if (oldLink != null) {
-              console.log('destroy')
-              oldLink.destroy(dev.selectedCell)
+            if (!e.altKey) {
+              var oldLink = dev.selectedLink()
+              if (oldLink != null) {
+                console.log('destroy')
+                oldLink.destroy(dev.selectedCell)
+              }
             }
-            current.move(command, dev.selectedCell, dev.selectedSide)
+            current.move(command, dev.selectedCell, dev.selectedSide, {noBackLink: e.altKey})
             dev.selectedCell = dev.selectedSide = null
             this.key(originalCommand)
             return

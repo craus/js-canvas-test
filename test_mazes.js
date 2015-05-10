@@ -377,4 +377,21 @@ testMazes = {
       ]
     })
   },
+  
+  testMaze034: function(start) {
+    //start.right().key('red')
+    start.walk('rrr')
+    start.up(cells[1], 'l', {mirror: true, noBackLink: true})
+  },
 }
+
+
+
+
+
+
+
+
+
+
+

@@ -13,8 +13,10 @@ dev = {
     var mirroring = function() {
       link.mirror = !link.mirror
       link.mirrorTransform()
-      back.mirror = !back.mirror
-      back.mirrorTransform()
+      if (back != null) {
+        back.mirror = !back.mirror
+        back.mirrorTransform()
+      }
     }
     mirroring()
     operations.push(operationSeparator)

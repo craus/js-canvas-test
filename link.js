@@ -45,6 +45,9 @@ function createLink(params) {
       this.matrix = transformByMatrix(this.matrix, mx)
     },
     findBackLink: function(from) {
+      if (this.noBackLink) {
+        return null
+      }
       var mx = this.matrix
       var that = this
       return this.to.links.find(function(link) { 
@@ -58,7 +61,7 @@ function createLink(params) {
       var that = this
       operations.push(function() {
         from.links.push(that)
-        this.to.links.push(backLink)
+        that.to.links.push(backLink)
       })
     },
   }, sides[params.command] || {}, linkParams, params)
