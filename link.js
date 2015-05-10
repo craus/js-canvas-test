@@ -24,7 +24,7 @@ function createLink(params) {
     z: 1, 
     globalRotate: 0,
     mirror: false,
-    back: function(params) {
+    createBackLink: function(params) {
       var result = createLink($.extend({}, this, {
         matrix: inverseMatrix(this.matrix),
         command: this.fromSide,

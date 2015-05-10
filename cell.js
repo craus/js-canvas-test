@@ -33,7 +33,7 @@
         this.links.push(link)
         var cell = link.to
         if (!params.noBackLink) {
-          var backLink = link.back({to: this})
+          var backLink = link.createBackLink({to: this})
           cell.links.push(backLink) 
         }
         var that = this
