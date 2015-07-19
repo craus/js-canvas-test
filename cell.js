@@ -151,7 +151,8 @@
           if (this.visited > 0) {
             //cp = colors.mix(cp, [255,192,128,1], 0.25)
           }
-          ui.rect(-0.51, -0.51, 1.02, 1.02, cp)
+          ui.rect(-0.5, -0.5, 1, 1, cp)
+          ui.rect0(-0.5, -0.5, 1, 1, 1, cp)          
           if (!!this.condition) {
             var cond = this.condition
             var lighted = !this.available()
@@ -205,10 +206,20 @@
         }
         if (ui.layer == 1) {
           if (this.items.length > 0) {
-            ui.zoom(0.5)
+            ui.zoom(0.17)
             this.items[0].paint()
             ui.untransform()
           }
+          this.links.forEach(function(link) {
+            if (!!link.command && link.locked) {
+              ui.zoom(0.5)
+              ui.rotate(commandAngles[link.command])
+              debugData.watch = true
+              ui.line(1,-1,1,1,4,colors.white)
+              ui.untransform()
+              ui.untransform()              
+            }
+          })
         }
         if (ui.layer == 2) {
           if (paintManCopies && maze.getCurrent() == this) {
@@ -221,7 +232,7 @@
           }
           if (dev.selectedCell == this) {
             ui.transform(0,0,1,-Math.PI/2 *(2+ commands.indexOf(dev.selectedSide[0])))
-            ui.line(0.51, 0.51, 0.51, -0.51, 0.02, colors.red)
+            ui.line(0.51, 0.51, 0.51, -0.51, 4, colors.red)
             ui.untransform()
           }
         }
@@ -267,10 +278,6 @@
       
       open: function(c) { this.addCondition(colors[c], true); return this },
       close: function(c) { this.addCondition(colors[c], false); return this },
-      
-      key: function(color) {
-        this.items.push(createKey(color))
-      },
      
       mapping: function() {
         var q = new Deque()

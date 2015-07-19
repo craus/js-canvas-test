@@ -19,6 +19,10 @@ ui = {
     this.g.fillStyle = this.g.strokeStyle = c
   },
   
+  currentZoom: function() {
+    return Math.sqrt(sqr(this.transforms.last()[0]) + sqr(this.transforms.last()[1]))
+  },
+  
   circle: function(x,y,r,c) {
     var g = this.g
     c = rgba(c)
@@ -26,7 +30,7 @@ ui = {
     g.arc(x, y, r, 0, 2*Math.PI, false)
     g.fillStyle = c
     g.fill()
-    g.lineWidth = 1.0 / this.transforms.last()[0]
+    g.lineWidth = 1.0 / this.currentZoom()
     g.strokeStyle = c
     g.stroke()
   },
@@ -37,19 +41,21 @@ ui = {
     w = w || 1
     g.beginPath()
     g.arc(x, y, r, 0, 2*Math.PI, false)
-    g.lineWidth = 1.0 * w / this.transforms.last()[0]
+    g.lineWidth = 1.0 * w / this.currentZoom()
     g.strokeStyle = c
     g.stroke()
   },
   
   line: function(x1,y1,x2,y2,w,c) {
     var g = this.g
-    c = rgba(c)
+    c = rgba(c) 
     g.beginPath()
     g.moveTo(x1,y1)
     g.lineTo(x2,y2)
-    g.lineWidth = w
-    g.strokeStyle = c
+    if (!!w) {
+      g.lineWidth = 1.0 * w / this.currentZoom()
+    }
+    g.strokeStyle = c || g.strokeStyle
     g.stroke()
   },
   
@@ -57,6 +63,16 @@ ui = {
     c = rgba(c)
     this.g.fillStyle = c
     this.g.fillRect(l,t,w,h,c)
+  },
+  
+  rect0: function(l,t,w,h,width, c) {
+    c = rgba(c)
+    if (!!width) {
+      this.g.lineWidth = 1.0 * width / this.currentZoom()
+    }    
+    this.g.strokeStyle = c || g.strokeStyle
+    this.g.rect(l,t,w,h)
+    this.g.stroke()
   },
   
   canvas: function() { return document.getElementById('display') },
@@ -151,10 +167,10 @@ ui = {
   paintMan: function() {
     ui.color('purple')
     ui.circle(0,-0.3,0.1)
-    ui.line(0,-0.3, 0,0, 0.03)
-    ui.line(0.1,0.3, 0,0, 0.03)
-    ui.line(-0.1,0.3, 0,0, 0.03)
-    ui.line(0.1,0, 0,-0.2, 0.03)
-    ui.line(-0.1,0, 0,-0.2, 0.03)
+    ui.line(0,-0.3, 0,0, 5)
+    ui.line(0.1,0.3, 0,0)
+    ui.line(-0.1,0.3, 0,0)
+    ui.line(0.1,0, 0,-0.2)
+    ui.line(-0.1,0, 0,-0.2)
   },
 }

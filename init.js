@@ -7,11 +7,11 @@ window.onload = function() {
   allLevels = mazes.levels
   availableLevels = allLevels
   currentLevel = availableLevels[1]
-  currentLevel = testMazes.testMaze034
+  currentLevel = testMazes.testMaze011
 
   operationSeparator = {}
   operations = []
-  currentLevel = function(){}
+  //currentLevel = function(){}
   
   maze = null
   

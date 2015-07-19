@@ -89,12 +89,12 @@ function matrixPow(old, k) {
 }
 
 function closeMatrices(a,b) {
-    for(var i = a.length; i--;) {
-      if (Math.abs(a[i]-b[i]) > 1e-10)
-        return false;
-    }
-    return true;
+  for(var i = a.length; i--;) {
+    if (Math.abs(a[i]-b[i]) > 1e-10)
+      return false;
   }
+  return true;
+}
 
 singleCommandTransform = {
   u: 'r', 
@@ -108,6 +108,13 @@ mirrorCommandTransform = {
   r: 'l',
   d: 'd',
   l: 'r'
+}
+
+commandAngles = {
+  r: 0,
+  d: Math.PI/2,
+  l: Math.PI,
+  u: 3*Math.PI/2
 }
 
 function transformMap(old, delta) {

@@ -379,9 +379,18 @@ testMazes = {
   },
   
   testMaze034: function(start) {
-    //start.right().key('red')
     start.walk('rrr')
     start.up(cells[1], 'l', {mirror: true, noBackLink: true})
+  },
+  
+  testMaze035: function(start) {
+    var key = createKey({
+      paintCode: function() {
+        ui.line(-1,0,1,0)
+      }
+    })
+    start.right().items.push(key)
+    start.down(null, null, {locked: key})
   },
 }
 
