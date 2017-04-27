@@ -114,7 +114,7 @@ function createMaze(x, y, z, construct) {
           dev.selectedCell = current
           dev.selectedSide = command
           return
-        } else if (e.ctrlKey) {
+        } else if (e.ctrlKey || meta) {
           if (!link) {
             operations.push(operationSeparator)
             if (!e.altKey) {
